@@ -1,6 +1,7 @@
 const userController = require("../controllers").users;
 const courseController = require("../controllers").courses;
 const schoolController = require("../controllers").schools;
+const lecturerController = require("../controllers").lecturers;
 
 module.exports = app => {
   app.get("/api", (req, res) =>
@@ -23,4 +24,10 @@ module.exports = app => {
   // Schools
   app.get("/api/schools", schoolController.list);
   app.put("/api/schools/:id", schoolController.update);
+
+  // Lecturers
+  app.get("/api/lecturers", lecturerController.list);
+  app.get("/api/lecturers/:id", lecturerController.get);
+  app.post("/api/lecturers", lecturerController.create);
+  app.put("/api/lecturers/:id", lecturerController.update);
 };
