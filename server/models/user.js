@@ -1,31 +1,31 @@
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require("bcrypt-nodejs");
 
 module.exports = (sequelize, DataTypes) => {
   var User = sequelize.define(
-    'User',
+    "User",
     {
       name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          isEmail: true
-        }
+          isEmail: true,
+        },
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
-      avatar: DataTypes.STRING
+      avatar: DataTypes.STRING,
     },
     {
       instanceMethods: {
         validPassword(password) {
           return bcrypt.compare(password, this.password);
-        }
+        },
       },
       hooks: {
         beforeCreate: (user, options) => {
@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         beforeUpdate: user => {
           user.password = bcrypt.hashSync(user.password);
-        }
-      }
+        },
+      },
     }
   );
 

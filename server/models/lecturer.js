@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
     Lecturer.belongsTo(models.School, {
       foreignKey: "schoolId",
     });
+
+    Lecturer.hasMany(models.Review, {
+      foreignKey: "lecturerId",
+      as: "reviews",
+    });
   };
 
   return Lecturer;

@@ -2,6 +2,7 @@ const userController = require("../controllers").users;
 const courseController = require("../controllers").courses;
 const schoolController = require("../controllers").schools;
 const lecturerController = require("../controllers").lecturers;
+const reviewController = require("../controllers").reviews;
 
 module.exports = app => {
   app.get("/api", (req, res) =>
@@ -28,6 +29,11 @@ module.exports = app => {
   // Lecturers
   app.get("/api/lecturers", lecturerController.list);
   app.get("/api/lecturers/:id", lecturerController.get);
+  app.get("/api/lecturers/:id/reviews", lecturerController.reviews);
   app.post("/api/lecturers", lecturerController.create);
   app.put("/api/lecturers/:id", lecturerController.update);
+
+  // Reviews
+  app.get("/api/reviews", reviewController.list);
+  app.post("/api/reviews", reviewController.create);
 };
