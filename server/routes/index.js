@@ -1,21 +1,26 @@
-const userController = require('../controllers').users;
-const courseController = require('../controllers').courses;
+const userController = require("../controllers").users;
+const courseController = require("../controllers").courses;
+const schoolController = require("../controllers").schools;
 
 module.exports = app => {
-  app.get('/api', (req, res) =>
+  app.get("/api", (req, res) =>
     res.status(200).send({
-      message: 'Welcome to the Channel API!'
+      message: "Welcome to the Channel API!",
     })
   );
 
   // Users
-  app.get('/api/users', userController.list);
-  app.get('/api/users/:id', userController.get);
-  app.put('/api/users/:id', userController.update);
-  app.post('/api/users', userController.create);
+  app.get("/api/users", userController.list);
+  app.get("/api/users/:id", userController.get);
+  app.put("/api/users/:id", userController.update);
+  app.post("/api/users", userController.create);
 
   // Courses
-  app.get('/api/courses', courseController.list);
-  app.get('/api/courses/:courseId', courseController.get);
-  app.post('/api/courses', courseController.create);
+  app.get("/api/courses", courseController.list);
+  app.get("/api/courses/:courseId", courseController.get);
+  app.post("/api/courses", courseController.create);
+
+  // Schools
+  app.get("/api/schools", schoolController.list);
+  app.put("/api/schools/:id", schoolController.update);
 };
