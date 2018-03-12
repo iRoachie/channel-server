@@ -1,5 +1,6 @@
 const Lecturer = require("../models").Lecturer;
 const Review = require("../models").Review;
+const School = require("../models").School;
 const models = require("../models");
 
 module.exports = {
@@ -69,7 +70,15 @@ module.exports = {
       .catch(error => res.status(400).send(error));
   },
   get(req, res) {
-    Lecturer.findById(req.params.id)
+    Lecturer.findAll({
+      where: { id: req.params.id },
+      include: [
+        {
+          model: School,
+        },
+      ],
+      attributes: ["id", "name"],
+    })
       .then(lecturer => {
         if (!lecturer) {
           return res.status(404).send({
