@@ -52,7 +52,20 @@ module.exports = {
           });
         }
 
-        Review.findAll({ where: { lecturerId: req.params.id } })
+        Review.findAndCount({
+          where: { lecturerId: req.params.id },
+          include: [
+            {
+              model: models.User,
+              attributes: ["name", "avatar"],
+            },
+            {
+              model: models.Course,
+              attributes: ["code", "name"],
+            },
+          ],
+          attributes: ["semester", "year", "rating", "comment"],
+        })
           .then(reviews => {
             res.status(200).send(reviews);
           })
