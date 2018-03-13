@@ -1,6 +1,6 @@
 const Review = require("../models").Review;
 
-function list(req, res) {
+function list(_, res) {
   return Review.all()
     .then(reviews => res.status(200).send(reviews))
     .catch(error => res.status(400).send(error));
@@ -15,14 +15,14 @@ function create(req, res) {
     },
   })
     .then(reviews => {
-      if (reviews) {
+      if (reviews.length > 0) {
         return res.status(400).send({
           message:
             "User has already made a review for this course and lecturer",
         });
       }
 
-      Review.create({
+      return Review.create({
         userId: req.body.user_id,
         lecturerId: req.body.lecturer_id,
         courseId: req.body.course_id,

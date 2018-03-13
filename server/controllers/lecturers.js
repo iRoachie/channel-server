@@ -38,8 +38,8 @@ function list(_, res) {
       )
     )
     .catch(error => {
-      throw new Error(error);
       res.status(400).send(error);
+      throw new Error(error);
     });
 }
 
@@ -72,6 +72,32 @@ function reviews(req, res) {
         .catch(error => res.status(400).send(error));
     })
     .catch(error => res.status(400).send(error));
+}
+
+function courses(req, res) {
+  Lecturer.findById(req.params.id)
+    .then(lecturer => {
+      if (!lecturer) {
+        return res.status(404).send({
+          message: "Lecturer with id not found",
+        });
+      }
+
+      return Review.findAll({
+        where: { lecturerId: req.params.id },
+        include: [
+          {
+            model: models.Course,
+            attributes: ["id", "code", "name"],
+            group: ["Course.id"],
+          },
+        ],
+        attributes: [],
+      })
+        .then(reviews => res.status(200).send(reduceCourses(reviews)))
+        .catch(error => res.status(400).send(error));
+    })
+    .catch(error => res.status(404).send(error));
 }
 
 function create(req, res) {
@@ -126,9 +152,37 @@ function update(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
+function reduceCourses(array) {
+  const courses = array.map(a => a.get({ plain: true }));
+
+  const results = courses.reduce((array, cur) => {
+    if (array.filter(b => b.Course.code === cur.Course.code).length === 0) {
+      return [...array, { Course: { ...cur.Course, count: 1 } }];
+    } else {
+      return array.map(
+        a =>
+          a.Course.code === cur.Course.code
+            ? {
+                Course: {
+                  ...a.Course,
+                  count: a.Course.count + 1,
+                },
+              }
+            : a
+      );
+    }
+  }, []);
+
+  return {
+    count: results.length,
+    rows: results,
+  };
+}
+
 module.exports = {
   list,
   reviews,
+  courses,
   create,
   get,
   update,
