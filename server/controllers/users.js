@@ -47,7 +47,7 @@ function update(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
-function list(req, res) {
+function list(_, res) {
   return User.all()
     .then(users => res.status(200).send(users))
     .catch(error => res.status(400).send(error));

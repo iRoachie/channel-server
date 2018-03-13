@@ -1,22 +1,23 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   var Course = sequelize.define(
-    'Course',
+    "Course",
     {
       code: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     },
     {}
   );
-  Course.associate = function(models) {
+
+  Course.associate = function() {
     // associations can be defined here
   };
+
   return Course;
 };

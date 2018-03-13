@@ -1,6 +1,6 @@
 const Course = require("../models").Course;
 
-function list(req, res) {
+function list(_, res) {
   return Course.all()
     .then(courses => res.status(200).send(courses))
     .catch(error => res.status(400).send(error));

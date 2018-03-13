@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       hooks: {
-        beforeCreate: (user, options) => {
+        beforeCreate: user => {
           user.password = bcrypt.hashSync(user.password);
         },
         beforeUpdate: user => {
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  User.associate = function(models) {
+  User.associate = function() {
     // associations can be defined here
   };
 

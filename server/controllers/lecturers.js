@@ -3,7 +3,7 @@ const Review = require("../models").Review;
 const School = require("../models").School;
 const models = require("../models");
 
-function list(req, res) {
+function list(_, res) {
   Lecturer.findAll({
     include: [
       {

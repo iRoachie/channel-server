@@ -5,7 +5,7 @@ const lecturerController = require("../controllers").lecturers;
 const reviewController = require("../controllers").reviews;
 
 module.exports = app => {
-  app.get("/api", (req, res) =>
+  app.get("/api", (_, res) =>
     res.status(200).send({
       message: "Welcome to the Channel API!",
     })
