@@ -30,6 +30,10 @@ module.exports = app => {
   app.get("/api/lecturers", lecturerController.list);
   app.get("/api/lecturers/:id", lecturerController.get);
   app.get("/api/lecturers/:id/reviews", lecturerController.reviews);
+  app.get(
+    "/api/lecturers/:id/reviews/:courseId",
+    lecturerController.reviewsForCourse
+  );
   app.get("/api/lecturers/:id/courses", lecturerController.courses);
   app.post("/api/lecturers", lecturerController.create);
   app.put("/api/lecturers/:id", lecturerController.update);

@@ -74,6 +74,33 @@ function reviews(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
+function reviewsForCourse(req, res) {
+  Lecturer.findById(req.params.id)
+    .then(lecturer => {
+      if (!lecturer) {
+        return res.status(404).send({
+          message: "Lecturer with id not found",
+        });
+      }
+
+      Review.findAll({
+        where: { lecturerId: req.params.id, courseId: req.params.courseId },
+        include: [
+          {
+            model: models.User,
+            attributes: ["name", "avatar"],
+          },
+        ],
+        attributes: ["semester", "year", "rating", "comment"],
+      })
+        .then(reviews => {
+          res.status(200).send(reviews);
+        })
+        .catch(error => res.status(400).send(error));
+    })
+    .catch(error => res.status(400).send(error));
+}
+
 function courses(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
@@ -182,6 +209,7 @@ function reduceCourses(array) {
 module.exports = {
   list,
   reviews,
+  reviewsForCourse,
   courses,
   create,
   get,
