@@ -29,6 +29,7 @@ function create(req, res) {
         semester: req.body.semester,
         year: req.body.year,
         rating: req.body.rating,
+        comment: req.body.comment,
       })
         .then(review => {
           res.status(200).send(review);
