@@ -188,7 +188,7 @@ function reduceCourses(array) {
 
   const results = courses.reduce((array, cur) => {
     if (array.filter(b => b.Course.code === cur.Course.code).length === 0) {
-      return [...array, { Course: { ...cur.Course, count: 1 } }];
+      return [...array, { Course: { ...cur.Course, reviews: 1 } }];
     } else {
       return array.map(
         a =>
@@ -196,7 +196,7 @@ function reduceCourses(array) {
             ? {
                 Course: {
                   ...a.Course,
-                  count: a.Course.count + 1,
+                  reviews: a.Course.reviews + 1,
                 },
               }
             : a
