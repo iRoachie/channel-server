@@ -11,6 +11,10 @@ function list(_, res) {
         as: "reviews",
         attributes: [],
       },
+      {
+        model: School,
+        attributes: ["name"],
+      },
     ],
     attributes: {
       include: [
