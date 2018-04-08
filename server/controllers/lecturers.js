@@ -3,8 +3,19 @@ const Review = require("../models").Review;
 const School = require("../models").School;
 const models = require("../models");
 
-function list(_, res) {
+function list(req, res) {
   Lecturer.findAll({
+    where: {
+      [models.sequelize.Op.or]: [
+        {
+          name: {
+            [models.sequelize.Op.like]: `%${
+              req.query.search ? req.query.search.toLowerCase() : ""
+            }%`,
+          },
+        },
+      ],
+    },
     include: [
       {
         model: Review,
