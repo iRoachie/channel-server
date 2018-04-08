@@ -4,14 +4,14 @@ const School = require("../models").School;
 const models = require("../models");
 
 function list(req, res) {
+  const search = req.query.search ? req.query.search.toLowerCase() : "";
+
   Lecturer.findAll({
     where: {
       [models.sequelize.Op.or]: [
         {
           name: {
-            [models.sequelize.Op.like]: `%${
-              req.query.search ? req.query.search.toLowerCase() : ""
-            }%`,
+            [models.sequelize.Op.like]: `%${search}%`,
           },
         },
       ],
