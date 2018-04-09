@@ -107,7 +107,7 @@ function reviewsForCourse(req, res) {
             attributes: ["name", "avatar"],
           },
         ],
-        attributes: ["semester", "year", "rating", "comment"],
+        attributes: ["id", "semester", "year", "rating", "comment"],
       })
         .then(reviews => {
           res.status(200).send(reviews);
