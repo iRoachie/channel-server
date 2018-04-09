@@ -100,6 +100,7 @@ function reviewsForCourse(req, res) {
       }
 
       Review.findAll({
+        order: [["id", "DESC"]],
         where: { lecturerId: req.params.id, courseId: req.params.courseId },
         include: [
           {
