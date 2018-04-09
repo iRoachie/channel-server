@@ -1,4 +1,4 @@
-const User = require("../models").User;
+const { User } = require("../models");
 
 function create(req, res) {
   return User.create({

@@ -1,20 +1,20 @@
-const Course = require("../models").Course;
-const models = require("../models");
+const { Course } = require("../models");
+const { Op } = require("sequelize");
 
 function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : "";
 
   return Course.findAll({
     where: {
-      [models.sequelize.Op.or]: [
+      [Op.or]: [
         {
           code: {
-            [models.sequelize.Op.like]: `%${search}%`,
+            [Op.like]: `%${search}%`,
           },
         },
         {
           name: {
-            [models.sequelize.Op.like]: `%${search}%`,
+            [Op.like]: `%${search}%`,
           },
         },
       ],

@@ -1,4 +1,4 @@
-const School = require("../models").School;
+const { School } = require("../models");
 
 function list(_, res) {
   School.all()

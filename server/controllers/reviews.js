@@ -1,4 +1,4 @@
-const Review = require("../models").Review;
+const { Review } = require("../models");
 
 function list(_, res) {
   return Review.all()

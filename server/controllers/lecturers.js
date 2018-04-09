@@ -1,17 +1,15 @@
-const Lecturer = require("../models").Lecturer;
-const Review = require("../models").Review;
-const School = require("../models").School;
-const models = require("../models");
+const { Lecturer, Review, School, User, Course } = require("../models");
+const Sequelize = require("sequelize");
 
 function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : "";
 
   Lecturer.findAll({
     where: {
-      [models.sequelize.Op.or]: [
+      [Sequelize.Op.or]: [
         {
           name: {
-            [models.sequelize.Op.like]: `%${search}%`,
+            [Sequelize.Op.like]: `%${search}%`,
           },
         },
       ],
@@ -29,14 +27,8 @@ function list(req, res) {
     ],
     attributes: {
       include: [
-        [
-          models.sequelize.fn("COUNT", models.sequelize.col("reviews.id")),
-          "totalReviews",
-        ],
-        [
-          models.sequelize.fn("SUM", models.sequelize.col("reviews.rating")),
-          "totalRatings",
-        ],
+        [Sequelize.fn("COUNT", Sequelize.col("reviews.id")), "totalReviews"],
+        [Sequelize.fn("SUM", Sequelize.col("reviews.rating")), "totalRatings"],
       ],
     },
     group: ["Lecturer.id"],
@@ -72,11 +64,11 @@ function reviews(req, res) {
         where: { lecturerId: req.params.id },
         include: [
           {
-            model: models.User,
+            model: User,
             attributes: ["name", "avatar"],
           },
           {
-            model: models.Course,
+            model: Course,
             attributes: ["code", "name"],
           },
         ],
@@ -104,7 +96,7 @@ function reviewsForCourse(req, res) {
         where: { lecturerId: req.params.id, courseId: req.params.courseId },
         include: [
           {
-            model: models.User,
+            model: User,
             attributes: ["name", "avatar"],
           },
         ],
@@ -131,7 +123,7 @@ function courses(req, res) {
         where: { lecturerId: req.params.id },
         include: [
           {
-            model: models.Course,
+            model: Course,
             attributes: ["id", "code", "name"],
             group: ["Course.id"],
           },
