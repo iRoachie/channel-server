@@ -68,6 +68,7 @@ function reviews(req, res) {
       }
 
       Review.findAndCount({
+        order: [["id", "DESC"]],
         where: { lecturerId: req.params.id },
         include: [
           {
