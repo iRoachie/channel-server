@@ -197,23 +197,25 @@ function update(req, res) {
 function reduceCourses(array) {
   const courses = array.map(a => a.get({ plain: true }));
 
-  const results = courses.reduce((array, cur) => {
-    if (array.filter(b => b.Course.code === cur.Course.code).length === 0) {
-      return [...array, { Course: { ...cur.Course, reviews: 1 } }];
-    } else {
-      return array.map(
-        a =>
-          a.Course.code === cur.Course.code
-            ? {
-                Course: {
-                  ...a.Course,
-                  reviews: a.Course.reviews + 1,
-                },
-              }
-            : a
-      );
-    }
-  }, []);
+  const results = courses
+    .reduce((array, cur) => {
+      if (array.filter(b => b.Course.code === cur.Course.code).length === 0) {
+        return [...array, { Course: { ...cur.Course, reviews: 1 } }];
+      } else {
+        return array.map(
+          a =>
+            a.Course.code === cur.Course.code
+              ? {
+                  Course: {
+                    ...a.Course,
+                    reviews: a.Course.reviews + 1,
+                  },
+                }
+              : a
+        );
+      }
+    }, [])
+    .map(a => a.Course);
 
   return {
     count: results.length,
