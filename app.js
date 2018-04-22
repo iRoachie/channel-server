@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const env = require('dotenv').load();
+require('dotenv').load();
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 require('./server/routes')(app);
 app.get('*', (req, res) =>
   res.status(200).send({
-    message: 'Welcome to the beginning of nothingness.'
+    message: 'Welcome to the beginning of nothingness.',
   })
 );
 
