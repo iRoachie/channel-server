@@ -47,24 +47,24 @@ async function create(req, res) {
       },
     });
   } catch (error) {
-    res.status(500).send({
-      error,
-    });
+    res.status(500).send(error);
   }
 }
 
-function get(req, res) {
-  return User.findById(req.params.id)
-    .then(user => {
-      if (!user) {
-        return res.status(404).send({
-          message: 'User not found',
-        });
-      }
+async function get(req, res) {
+  try {
+    const user = await User.findById(req.params.id);
 
-      return res.status(200).send(user);
-    })
-    .catch(error => res.status(400).send(error));
+    if (!user) {
+      res.status(404).send({
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
 
 function update(req, res) {
@@ -89,10 +89,13 @@ function update(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
-function list(_, res) {
-  return User.all()
-    .then(users => res.status(200).send(users))
-    .catch(error => res.status(400).send(error));
+async function list(_, res) {
+  try {
+    const users = await User.all();
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
 
 module.exports = {
