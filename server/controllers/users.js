@@ -67,26 +67,33 @@ async function get(req, res) {
   }
 }
 
-function update(req, res) {
-  return User.findById(req.params.id)
-    .then(user => {
-      if (!user) {
-        return res.status(404).send({
-          message: 'User not found',
-        });
-      }
+async function update(req, res) {
+  try {
+    const user = await User.findById(req.params.id);
 
-      return user
-        .update({
-          name: req.body.name || user.name,
-          avatar: req.body.avatar || user.avatar,
-          password: req.body.password || user.password,
-          email: req.body.email || user.email,
-        })
-        .then(() => res.status(200).send(user))
-        .catch(error => res.status(400).send(error));
-    })
-    .catch(error => res.status(400).send(error));
+    if (!user) {
+      res.status(404).send({
+        message: 'User not found',
+      });
+    }
+
+    const { name, avatar } = req.body;
+
+    const updatedUser = await user.update({
+      name: name || user.name,
+      avatar: avatar || user.avatar,
+    });
+
+    if (name) {
+      admin.auth().updateUser(user.firebase_id, {
+        displayName: name,
+      });
+    }
+
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
 
 async function list(_, res) {
