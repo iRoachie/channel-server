@@ -1,14 +1,56 @@
-const { User } = require("../models");
+const admin = require('firebase-admin');
+const { User } = require('../models');
+const { DEFAULT_AVATAR } = require('../config/constants');
 
-function create(req, res) {
-  return User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    avatar: req.body.avatar,
-  })
-    .then(user => res.status(200).send(user))
-    .catch(error => res.status(400).send(error));
+async function create(req, res) {
+  let { name, email, password, avatar } = req.body;
+
+  if (!name) {
+    res.status(422).send({
+      message: 'Missing param `name` in body',
+    });
+  }
+
+  if (!email) {
+    res.status(422).send({
+      message: 'Missing param `email` in body',
+    });
+  }
+
+  if (!password) {
+    res.status(422).send({
+      message: 'Missing param `password` in body',
+    });
+  }
+
+  if (!avatar) {
+    avatar = DEFAULT_AVATAR;
+  }
+
+  try {
+    const userRecord = await admin.auth().createUser({
+      displayName: name,
+      email,
+      password,
+    });
+
+    const user = await User.create({
+      firebase_id: userRecord.uid,
+      name,
+      avatar,
+    });
+
+    res.status(200).send({
+      data: {
+        email,
+        ...user.dataValues,
+      },
+    });
+  } catch (error) {
+    res.status(500).send({
+      error,
+    });
+  }
 }
 
 function get(req, res) {
@@ -16,7 +58,7 @@ function get(req, res) {
     .then(user => {
       if (!user) {
         return res.status(404).send({
-          message: "User not found",
+          message: 'User not found',
         });
       }
 
@@ -30,7 +72,7 @@ function update(req, res) {
     .then(user => {
       if (!user) {
         return res.status(404).send({
-          message: "User not found",
+          message: 'User not found',
         });
       }
 
@@ -59,3 +101,4 @@ module.exports = {
   update,
   list,
 };
+``;
