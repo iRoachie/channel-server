@@ -1,8 +1,21 @@
-const { Lecturer, Review, School, User, Course } = require("../models");
-const Sequelize = require("sequelize");
+const { Lecturer, Review, School, User, Course } = require('../models');
+const Sequelize = require('sequelize');
 
-function list(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : "";
+function list(_, res) {
+  Lecturer.findAll({
+    include: [
+      {
+        model: School,
+      },
+    ],
+    attributes: ['id', 'name'],
+  })
+    .then(lecturer => res.status(200).send(lecturer))
+    .catch(error => res.status(400).send(error));
+}
+
+function listWithReviews(req, res) {
+  const search = req.query.search ? req.query.search.toLowerCase() : '';
 
   Lecturer.findAll({
     where: {
@@ -17,21 +30,21 @@ function list(req, res) {
     include: [
       {
         model: Review,
-        as: "reviews",
+        as: 'reviews',
         attributes: [],
       },
       {
         model: School,
-        attributes: ["name"],
+        attributes: ['name'],
       },
     ],
     attributes: {
       include: [
-        [Sequelize.fn("COUNT", Sequelize.col("reviews.id")), "totalReviews"],
-        [Sequelize.fn("SUM", Sequelize.col("reviews.rating")), "totalRatings"],
+        [Sequelize.fn('COUNT', Sequelize.col('reviews.id')), 'totalReviews'],
+        [Sequelize.fn('SUM', Sequelize.col('reviews.rating')), 'totalRatings'],
       ],
     },
-    group: ["Lecturer.id"],
+    group: ['Lecturer.id'],
   })
     .then(lecturers =>
       res.status(200).send(
@@ -55,24 +68,24 @@ function reviews(req, res) {
     .then(lecturer => {
       if (!lecturer) {
         return res.status(404).send({
-          message: "Lecturer with id not found",
+          message: 'Lecturer with id not found',
         });
       }
 
       Review.findAndCount({
-        order: [["id", "DESC"]],
+        order: [['id', 'DESC']],
         where: { lecturerId: req.params.id },
         include: [
           {
             model: User,
-            attributes: ["name", "avatar"],
+            attributes: ['name', 'avatar'],
           },
           {
             model: Course,
-            attributes: ["code", "name"],
+            attributes: ['code', 'name'],
           },
         ],
-        attributes: ["id", "semester", "year", "rating", "comment"],
+        attributes: ['id', 'semester', 'year', 'rating', 'comment'],
       })
         .then(reviews => {
           res.status(200).send(reviews);
@@ -87,20 +100,20 @@ function reviewsForCourse(req, res) {
     .then(lecturer => {
       if (!lecturer) {
         return res.status(404).send({
-          message: "Lecturer with id not found",
+          message: 'Lecturer with id not found',
         });
       }
 
       Review.findAll({
-        order: [["id", "DESC"]],
+        order: [['id', 'DESC']],
         where: { lecturerId: req.params.id, courseId: req.params.courseId },
         include: [
           {
             model: User,
-            attributes: ["name", "avatar"],
+            attributes: ['name', 'avatar'],
           },
         ],
-        attributes: ["id", "semester", "year", "rating", "comment"],
+        attributes: ['id', 'semester', 'year', 'rating', 'comment'],
       })
         .then(reviews => {
           res.status(200).send(reviews);
@@ -115,7 +128,7 @@ function courses(req, res) {
     .then(lecturer => {
       if (!lecturer) {
         return res.status(404).send({
-          message: "Lecturer with id not found",
+          message: 'Lecturer with id not found',
         });
       }
 
@@ -124,8 +137,8 @@ function courses(req, res) {
         include: [
           {
             model: Course,
-            attributes: ["id", "code", "name"],
-            group: ["Course.id"],
+            attributes: ['id', 'code', 'name'],
+            group: ['Course.id'],
           },
         ],
         attributes: [],
@@ -154,12 +167,12 @@ function get(req, res) {
         model: School,
       },
     ],
-    attributes: ["id", "name"],
+    attributes: ['id', 'name'],
   })
     .then(lecturer => {
       if (!lecturer) {
         return res.status(404).send({
-          message: "Lecturer with id not found",
+          message: 'Lecturer with id not found',
         });
       }
 
@@ -173,7 +186,7 @@ function update(req, res) {
     .then(lecturer => {
       if (!lecturer) {
         return res.status(404).send({
-          message: "Lecturer with id not found",
+          message: 'Lecturer with id not found',
         });
       }
 
@@ -219,6 +232,7 @@ function reduceCourses(array) {
 
 module.exports = {
   list,
+  listWithReviews,
   reviews,
   reviewsForCourse,
   courses,
