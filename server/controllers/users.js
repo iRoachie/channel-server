@@ -3,23 +3,17 @@ const { User } = require('../models');
 const { DEFAULT_AVATAR } = require('../config/constants');
 
 async function create(req, res) {
-  let { name, email, password, avatar } = req.body;
+  let { id: firebase_id, name, avatar } = req.body;
+
+  if (!firebase_id) {
+    res.status(422).send({
+      message: 'Missing param `id` in body',
+    });
+  }
 
   if (!name) {
     res.status(422).send({
       message: 'Missing param `name` in body',
-    });
-  }
-
-  if (!email) {
-    res.status(422).send({
-      message: 'Missing param `email` in body',
-    });
-  }
-
-  if (!password) {
-    res.status(422).send({
-      message: 'Missing param `password` in body',
     });
   }
 
@@ -28,21 +22,14 @@ async function create(req, res) {
   }
 
   try {
-    const userRecord = await admin.auth().createUser({
-      displayName: name,
-      email,
-      password,
-    });
-
     const user = await User.create({
-      firebase_id: userRecord.uid,
+      firebase_id: firebase_id,
       name,
       avatar,
     });
 
     res.status(200).send({
       data: {
-        email,
         ...user.dataValues,
       },
     });
