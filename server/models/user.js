@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  var User = sequelize.define('User', {
+  const User = sequelize.define('User', {
     firebase_id: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     avatar: DataTypes.STRING,
   });
 
-  User.associate = function() {
+  User.associate = () => {
     // associations can be defined here
   };
 

@@ -1,8 +1,6 @@
-"use strict";
-
 module.exports = (sequelize, DataTypes) => {
-  var Review = sequelize.define(
-    "Review",
+  const Review = sequelize.define(
+    'Review',
     {
       semester: {
         type: DataTypes.STRING,
@@ -29,18 +27,18 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
 
-  Review.associate = function(models) {
+  Review.associate = models => {
     // associations can be defined here
     Review.belongsTo(models.User, {
-      foreignKey: "userId",
+      foreignKey: 'userId',
     });
 
     Review.belongsTo(models.Lecturer, {
-      foreignKey: "lecturerId",
+      foreignKey: 'lecturerId',
     });
 
     Review.belongsTo(models.Course, {
-      foreignKey: "courseId",
+      foreignKey: 'courseId',
     });
   };
 
