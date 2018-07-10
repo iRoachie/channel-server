@@ -1,8 +1,9 @@
-const users = require("./users");
-const courses = require("./courses");
-const schools = require("./schools");
-const lecturers = require("./lecturers");
-const reviews = require("./reviews");
+const users = require('./users');
+const courses = require('./courses');
+const schools = require('./schools');
+const lecturers = require('./lecturers');
+const reviews = require('./reviews');
+const releases = require('./releases');
 
 module.exports = {
   users,
@@ -10,4 +11,5 @@ module.exports = {
   schools,
   lecturers,
   reviews,
+  releases,
 };

@@ -1,8 +1,11 @@
-const userController = require('../controllers').users;
-const courseController = require('../controllers').courses;
-const schoolController = require('../controllers').schools;
-const lecturerController = require('../controllers').lecturers;
-const reviewController = require('../controllers').reviews;
+const {
+  users,
+  courses,
+  schools,
+  lecturers,
+  reviews,
+  releases,
+} = require('../controllers');
 
 module.exports = app => {
   app.get('/api', (_, res) =>
@@ -12,34 +15,36 @@ module.exports = app => {
   );
 
   // Users
-  app.get('/api/users', userController.list);
-  app.get('/api/users/:id', userController.get);
-  app.put('/api/users/:id', userController.update);
-  app.post('/api/users', userController.create);
+  app.get('/api/users', users.list);
+  app.get('/api/users/:id', users.get);
+  app.put('/api/users/:id', users.update);
+  app.post('/api/users', users.create);
 
   // Courses
-  app.get('/api/courses', courseController.list);
-  app.get('/api/courses/:courseId', courseController.get);
-  app.post('/api/courses', courseController.create);
+  app.get('/api/courses', courses.list);
+  app.get('/api/courses/:courseId', courses.get);
+  app.post('/api/courses', courses.create);
 
   // Schools
-  app.get('/api/schools', schoolController.list);
-  app.put('/api/schools/:id', schoolController.update);
+  app.get('/api/schools', schools.list);
+  app.put('/api/schools/:id', schools.update);
 
   // Lecturers
-  app.get('/api/lecturers', lecturerController.list);
-  app.get('/api/lecturers_reviews', lecturerController.listWithReviews);
-  app.get('/api/lecturers/:id', lecturerController.get);
-  app.get('/api/lecturers/:id/reviews', lecturerController.reviews);
-  app.get(
-    '/api/lecturers/:id/reviews/:courseId',
-    lecturerController.reviewsForCourse
-  );
-  app.get('/api/lecturers/:id/courses', lecturerController.courses);
-  app.post('/api/lecturers', lecturerController.create);
-  app.put('/api/lecturers/:id', lecturerController.update);
+  app.get('/api/lecturers', lecturers.list);
+  app.get('/api/lecturers_reviews', lecturers.listWithReviews);
+  app.get('/api/lecturers/:id', lecturers.get);
+  app.get('/api/lecturers/:id/reviews', lecturers.reviews);
+  app.get('/api/lecturers/:id/reviews/:courseId', lecturers.reviewsForCourse);
+  app.get('/api/lecturers/:id/courses', lecturers.courses);
+  app.post('/api/lecturers', lecturers.create);
+  app.put('/api/lecturers/:id', lecturers.update);
 
   // Reviews
-  app.get('/api/reviews', reviewController.list);
-  app.post('/api/reviews', reviewController.create);
+  app.get('/api/reviews', reviews.list);
+  app.post('/api/reviews', reviews.create);
+
+  // Releases
+  app.get('/api/releases', releases.list);
+  app.post('/api/releases', releases.create);
+  app.put('/api/releases/:id', releases.update);
 };
