@@ -1,8 +1,19 @@
 const { Lecturer, Review, School, User, Course } = require('../models');
-const Sequelize = require('sequelize');
+const { Op, fn, col } = require('sequelize');
 
-function list(_, res) {
+function list(req, res) {
+  const search = req.query.search ? req.query.search.toLowerCase() : '';
+
   Lecturer.findAll({
+    where: {
+      [Op.or]: [
+        {
+          name: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+      ],
+    },
     include: [
       {
         model: School,
@@ -19,10 +30,10 @@ function listWithReviews(req, res) {
 
   Lecturer.findAll({
     where: {
-      [Sequelize.Op.or]: [
+      [Op.or]: [
         {
           name: {
-            [Sequelize.Op.like]: `%${search}%`,
+            [Op.like]: `%${search}%`,
           },
         },
       ],
@@ -40,8 +51,8 @@ function listWithReviews(req, res) {
     ],
     attributes: {
       include: [
-        [Sequelize.fn('COUNT', Sequelize.col('reviews.id')), 'totalReviews'],
-        [Sequelize.fn('SUM', Sequelize.col('reviews.rating')), 'totalRatings'],
+        [fn('COUNT', col('reviews.id')), 'totalReviews'],
+        [fn('SUM', col('reviews.rating')), 'totalRatings'],
       ],
     },
     group: ['Lecturer.id'],
