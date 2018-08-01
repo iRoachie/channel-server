@@ -1,21 +1,23 @@
-const { School } = require("../models");
+const { School } = require('../models');
 
 function list(_, res) {
-  School.all()
+  School.findAll({
+    attributes: ['id', 'name'],
+  })
     .then(schools => res.status(200).send(schools))
     .catch(error => res.status(400).send(error));
 }
 
 function update(req, res) {
   if (!req.body.name) {
-    return res.status(400).send({ status: "error", message: "Missing name" });
+    return res.status(400).send({ status: 'error', message: 'Missing name' });
   }
 
   School.findById(req.params.id)
     .then(school => {
       if (!school) {
         return res.status(404).send({
-          message: "School not found for id",
+          message: 'School not found for id',
         });
       }
 
