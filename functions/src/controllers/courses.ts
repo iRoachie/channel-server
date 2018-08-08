@@ -1,8 +1,8 @@
-const { Course } = require("../models");
-const { Op } = require("sequelize");
+const { Course } = require('../models');
+import { Op } from 'sequelize';
 
 function list(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : "";
+  const search = req.query.search ? req.query.search.toLowerCase() : '';
 
   return Course.findAll({
     where: {
@@ -29,7 +29,7 @@ function get(req, res) {
     .then(course => {
       if (!course) {
         return res.status(404).send({
-          message: "No course with that code",
+          message: 'No course with that code',
         });
       }
 
@@ -47,8 +47,4 @@ function create(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
-module.exports = {
-  list,
-  get,
-  create,
-};
+export { list, get, create };

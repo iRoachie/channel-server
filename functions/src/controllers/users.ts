@@ -1,9 +1,14 @@
-const admin = require('firebase-admin');
+import * as admin from 'firebase-admin';
+require('firebase-functions');
+
 const { User } = require('../models');
-const { DEFAULT_AVATAR } = require('../config/constants');
+import { DEFAULT_AVATAR } from '../config/constants';
+
+admin.initializeApp();
 
 async function create(req, res) {
-  let { id: firebase_id, name, avatar } = req.body;
+  const { id: firebase_id, name } = req.body;
+  let { avatar } = req.body;
 
   if (!firebase_id) {
     res.status(422).send({
@@ -92,10 +97,4 @@ async function list(_, res) {
   }
 }
 
-module.exports = {
-  create,
-  get,
-  update,
-  list,
-};
-``;
+export { create, get, update, list };

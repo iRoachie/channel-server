@@ -1,12 +1,11 @@
-const Sequelize = require('sequelize');
-require('dotenv').load();
+require('dotenv').config({ path: '../.env' });
 
 const defaults = {
   dialect: 'mysql',
   dialectOptions: {
     decimalNumbers: true,
   },
-  operatorsAliases: Sequelize.Op,
+  operatorsAliases: false,
 };
 
 module.exports = {

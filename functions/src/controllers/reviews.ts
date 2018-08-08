@@ -1,4 +1,4 @@
-const { Review } = require("../models");
+const { Review } = require('../models');
 
 function list(_, res) {
   return Review.all()
@@ -18,7 +18,7 @@ function create(req, res) {
       if (reviews.length > 0) {
         return res.status(400).send({
           message:
-            "User has already made a review for this course and lecturer",
+            'User has already made a review for this course and lecturer',
         });
       }
 
@@ -39,7 +39,4 @@ function create(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
-module.exports = {
-  list,
-  create,
-};
+export { list, create };

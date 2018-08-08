@@ -50,8 +50,4 @@ function update({ body, params }, res) {
     .catch(error => res.status(400).send(error));
 }
 
-module.exports = {
-  list,
-  create,
-  update,
-};
+export { list, create, update };

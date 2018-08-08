@@ -1,7 +1,7 @@
-const { School } = require('../models');
+const models = require('../models');
 
 function list(_, res) {
-  School.findAll({
+  models.School.findAll({
     attributes: ['id', 'name'],
   })
     .then(schools => res.status(200).send(schools))
@@ -13,7 +13,7 @@ function update(req, res) {
     return res.status(400).send({ status: 'error', message: 'Missing name' });
   }
 
-  School.findById(req.params.id)
+  models.School.findById(req.params.id)
     .then(school => {
       if (!school) {
         return res.status(404).send({
@@ -31,7 +31,4 @@ function update(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
-module.exports = {
-  list,
-  update,
-};
+export { list, update };

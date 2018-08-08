@@ -1,5 +1,5 @@
 const { Lecturer, Review, School, User, Course } = require('../models');
-const { Op, fn, col } = require('sequelize');
+import { Op, fn, col } from 'sequelize';
 
 function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : '';
@@ -98,8 +98,8 @@ function reviews(req, res) {
         ],
         attributes: ['id', 'semester', 'year', 'rating', 'comment'],
       })
-        .then(reviews => {
-          res.status(200).send(reviews);
+        .then(a => {
+          res.status(200).send(a);
         })
         .catch(error => res.status(400).send(error));
     })
@@ -126,8 +126,8 @@ function reviewsForCourse(req, res) {
         ],
         attributes: ['id', 'semester', 'year', 'rating', 'comment'],
       })
-        .then(reviews => {
-          res.status(200).send(reviews);
+        .then(a => {
+          res.status(200).send(a);
         })
         .catch(error => res.status(400).send(error));
     })
@@ -154,7 +154,7 @@ function courses(req, res) {
         ],
         attributes: [],
       })
-        .then(reviews => res.status(200).send(reduceCourses(reviews)))
+        .then(a => res.status(200).send(reduceCourses(a)))
         .catch(error => res.status(400).send(error));
     })
     .catch(error => res.status(404).send(error));
@@ -213,14 +213,13 @@ function update(req, res) {
 }
 
 function reduceCourses(array) {
-  const courses = array.map(a => a.get({ plain: true }));
-
-  const results = courses
-    .reduce((array, cur) => {
-      if (array.filter(b => b.Course.code === cur.Course.code).length === 0) {
-        return [...array, { Course: { ...cur.Course, reviews: 1 } }];
+  const results = array
+    .map(a => a.get({ plain: true }))
+    .reduce((arr, cur) => {
+      if (arr.filter(b => b.Course.code === cur.Course.code).length === 0) {
+        return [...arr, { Course: { ...cur.Course, reviews: 1 } }];
       } else {
-        return array.map(
+        return arr.map(
           a =>
             a.Course.code === cur.Course.code
               ? {
@@ -241,7 +240,7 @@ function reduceCourses(array) {
   };
 }
 
-module.exports = {
+export {
   list,
   listWithReviews,
   reviews,
