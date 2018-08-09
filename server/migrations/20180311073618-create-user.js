@@ -11,6 +11,7 @@ module.exports = {
       firebase_id: {
         allowNull: false,
         type: Sequelize.STRING,
+        unique: true,
       },
       name: {
         type: Sequelize.STRING,
@@ -29,7 +30,7 @@ module.exports = {
       },
     });
   },
-  down: (queryInterface, Sequelize) => {
+  down: queryInterface => {
     return queryInterface.dropTable('Users');
   },
 };
