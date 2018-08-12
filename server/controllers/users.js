@@ -3,9 +3,9 @@ const { User } = require('../models');
 const { DEFAULT_AVATAR } = require('../config/constants');
 
 async function create(req, res) {
-  let { id: firebase_id, name, avatar } = req.body;
+  let { id, name, avatar } = req.body;
 
-  if (!firebase_id) {
+  if (!id) {
     res.status(422).send({
       message: 'Missing param `id` in body',
     });
@@ -23,7 +23,7 @@ async function create(req, res) {
 
   try {
     const user = await User.create({
-      firebase_id: firebase_id,
+      id,
       name,
       avatar,
     });
@@ -72,7 +72,7 @@ async function update(req, res) {
     });
 
     if (name) {
-      admin.auth().updateUser(user.firebase_id, {
+      admin.auth().updateUser(user.id, {
         displayName: name,
       });
     }

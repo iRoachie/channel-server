@@ -12,7 +12,7 @@ module.exports = {
         onDelete: 'SET NULL',
       }),
       queryInterface.addColumn('Reviews', 'userId', {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         references: {
           model: 'Users',
           key: 'id',

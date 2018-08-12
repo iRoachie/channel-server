@@ -4,12 +4,7 @@ module.exports = {
     return queryInterface.createTable('Users', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      firebase_id: {
-        allowNull: false,
         type: Sequelize.STRING,
         unique: true,
       },
