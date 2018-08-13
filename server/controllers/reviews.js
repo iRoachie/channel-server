@@ -1,9 +1,9 @@
-const { Review } = require("../models");
+const { Review } = require('../models');
 
 function list(_, res) {
   return Review.all()
-    .then(reviews => res.status(200).send(reviews))
-    .catch(error => res.status(400).send(error));
+    .then(reviews => res.send(reviews))
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function create(req, res) {
@@ -16,10 +16,9 @@ function create(req, res) {
   })
     .then(reviews => {
       if (reviews.length > 0) {
-        return res.status(400).send({
-          message:
-            "User has already made a review for this course and lecturer",
-        });
+        return res.boom.conflict(
+          'User has already made a review for this course and lecturer'
+        );
       }
 
       return Review.create({
@@ -32,11 +31,11 @@ function create(req, res) {
         comment: req.body.comment,
       })
         .then(review => {
-          res.status(200).send(review);
+          res.send(review);
         })
-        .catch(error => res.status(400).send(error));
+        .catch(error => res.boom.badRequest(error));
     })
-    .catch(error => res.status(400).send(error));
+    .catch(error => res.boom.badRequest(error));
 }
 
 module.exports = {

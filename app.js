@@ -1,12 +1,15 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const boom = require('express-boom');
 require('dotenv').load();
 
 const admin = require('firebase-admin');
 const app = express();
 
 app.use(logger('dev'));
+
+app.use(boom());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
