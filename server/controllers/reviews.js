@@ -17,7 +17,7 @@ function create(req, res) {
     .then(reviews => {
       if (reviews.length > 0) {
         return res.boom.conflict(
-          'User has already made a review for this course and lecturer'
+          `You've already made a review for this course and lecturer.`
         );
       }
 
