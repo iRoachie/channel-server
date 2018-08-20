@@ -1,8 +1,8 @@
-const { Course } = require("../models");
-const { Op } = require("sequelize");
+const { Course, Review } = require('../models');
+const { Op, fn, col } = require('sequelize');
 
 function list(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : "";
+  const search = req.query.search ? req.query.search.toLowerCase() : '';
 
   return Course.findAll({
     where: {
@@ -19,6 +19,16 @@ function list(req, res) {
         },
       ],
     },
+    include: [
+      {
+        model: Review,
+        attributes: [],
+      },
+    ],
+    attributes: {
+      include: [[fn('COUNT', col('Reviews.id')), 'totalReviews']],
+    },
+    group: ['Course.id'],
   })
     .then(courses => res.status(200).send(courses))
     .catch(error => res.status(400).send(error));
@@ -29,7 +39,7 @@ function get(req, res) {
     .then(course => {
       if (!course) {
         return res.status(404).send({
-          message: "No course with that code",
+          message: 'No course with that code',
         });
       }
 
