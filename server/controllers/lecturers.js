@@ -1,5 +1,5 @@
 const { Lecturer, Review, School, User, Course } = require('../models');
-const { Op, fn, col } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 
 function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : '';
@@ -55,6 +55,7 @@ function listWithReviews(req, res) {
         [fn('SUM', col('reviews.rating')), 'totalRatings'],
       ],
     },
+    order: [[literal('totalReviews'), 'DESC']],
     group: ['Lecturer.id'],
   })
     .then(lecturers =>
