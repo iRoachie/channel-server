@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
           max: new Date().getFullYear(),
         },
       },
-      comment: DataTypes.STRING,
+      comment: DataTypes.TEXT,
       rating: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       comment: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       rating: {
         type: Sequelize.INTEGER,
