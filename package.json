@@ -3,6 +3,7 @@
     "body-parser": "^1.18.2",
     "dotenv": "^5.0.1",
     "express": "^4.16.2",
+    "express-basic-auth": "^1.1.5",
     "express-boom": "^2.0.0",
     "firebase-admin": "^5.12.1",
     "morgan": "^1.9.0",

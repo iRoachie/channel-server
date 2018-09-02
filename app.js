@@ -2,6 +2,8 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const boom = require('express-boom');
+const basicAuth = require('express-basic-auth');
+
 require('dotenv').load();
 
 const admin = require('firebase-admin');
@@ -10,6 +12,11 @@ const app = express();
 app.use(logger('dev'));
 
 app.use(boom());
+app.use(
+  basicAuth({
+    users: { admin: process.env.ADMIN_AUTH },
+  })
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
