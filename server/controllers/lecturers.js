@@ -17,6 +17,7 @@ function list(req, res) {
     include: [
       {
         model: School,
+        attributes: ['name'],
       },
     ],
     attributes: ['id', 'name'],
