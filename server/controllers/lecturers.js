@@ -1,4 +1,4 @@
-const { Lecturer, Review, School, User, Course } = require('../models');
+const { Lecturer, Review, School, Course } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 
 async function list(req, res) {
@@ -150,10 +150,7 @@ function reduceCourses(array) {
     }, [])
     .map(a => a.Course);
 
-  return {
-    count: results.length,
-    rows: results,
-  };
+  return results;
 }
 
 module.exports = {
