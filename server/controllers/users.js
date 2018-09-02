@@ -17,11 +17,7 @@ async function create(req, res) {
       avatar,
     });
 
-    res.status(200).send({
-      data: {
-        ...user.dataValues,
-      },
-    });
+    res.send(user.dataValues);
   } catch (error) {
     switch (error.name) {
       case 'SequelizeValidationError':
@@ -33,7 +29,7 @@ async function create(req, res) {
           errors: error.errors.map(a => a.message),
         });
       default:
-        res.status(500).send(error);
+        return res.boom.serverUnavailable();
     }
   }
 }
@@ -46,7 +42,7 @@ async function get(req, res) {
       return res.boom.notFound('User not found');
     }
 
-    res.status(200).send(user);
+    res.send(user);
   } catch (error) {
     return res.boom.serverUnavailable();
   }
@@ -73,7 +69,7 @@ async function update(req, res) {
       });
     }
 
-    res.status(200).send(updatedUser);
+    res.send(updatedUser);
   } catch (error) {
     return res.boom.serverUnavailable();
   }
@@ -82,7 +78,7 @@ async function update(req, res) {
 async function list(_, res) {
   try {
     const users = await User.all();
-    return res.status(200).send(users);
+    return res.send(users);
   } catch (error) {
     return res.boom.serverUnavailable();
   }
