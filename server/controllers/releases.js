@@ -3,7 +3,7 @@ const { Release } = require('../models');
 function list(_, res) {
   Release.all()
     .then(releases => res.status(200).send(releases))
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function create({ body }, res) {
@@ -15,27 +15,26 @@ function create({ body }, res) {
     magazine,
   })
     .then(course => res.status(200).send(course))
-    .catch(error => res.status(400).send(error));
+    .catch(error => {
+      if (error.name === 'SequelizeValidationError') {
+        return res.boom.badData('', {
+          errors: error.errors.map(a => a.message),
+        });
+      }
+
+      res.boom.serverUnavailable();
+    });
 }
 
 function update({ body, params }, res) {
-  if (
-    !body.hasOwnProperty('title') &&
-    !body.hasOwnProperty('cover') &&
-    !body.hasOwnProperty('magazine')
-  ) {
-    return res.status(400).send({
-      status: 'error',
-      message: 'Missing `title`, `cover`, or `magazine`',
-    });
+  if (!body.title && !body.cover && !body.magazine) {
+    return res.boom.badData('Missing `title`, `cover`, or `magazine`');
   }
 
   Release.findById(params.id)
     .then(release => {
       if (!release) {
-        return res.status(404).send({
-          message: 'Release not found for id',
-        });
+        return res.boom.notFound('Release not found for id');
       }
 
       return release
@@ -45,9 +44,11 @@ function update({ body, params }, res) {
           magazine: body.magazine || release.magazine,
         })
         .then(() => res.status(200).send(release))
-        .catch(error => res.status(400).send(error));
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => {
+      res.boom.serverUnavailable();
+    });
 }
 
 module.exports = {
