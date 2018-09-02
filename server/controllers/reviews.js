@@ -1,9 +1,29 @@
-const { Review } = require('../models');
+const { Course, Lecturer, Review, User } = require('../models');
 
-function list(_, res) {
-  return Review.all()
-    .then(reviews => res.send(reviews))
-    .catch(() => res.boom.serverUnavailable());
+async function list(_, res) {
+  try {
+    const reviews = await Review.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'avatar'],
+        },
+        {
+          model: Course,
+          attributes: ['code', 'name'],
+        },
+        {
+          model: Lecturer,
+          attributes: ['name'],
+        },
+      ],
+      attributes: ['id', 'semester', 'year', 'comment', 'rating'],
+    });
+
+    return res.send(reviews);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
 function create(req, res) {
