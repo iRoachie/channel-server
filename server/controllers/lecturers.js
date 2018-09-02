@@ -1,76 +1,45 @@
 const { Lecturer, Review, School, User, Course } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 
-function list(req, res) {
+async function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : '';
 
-  Lecturer.findAll({
-    where: {
-      [Op.or]: [
-        {
-          name: {
-            [Op.like]: `%${search}%`,
+  try {
+    const lecturers = await Lecturer.findAll({
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: `%${search}%`,
+            },
           },
-        },
-      ],
-    },
-    include: [
-      {
-        model: School,
-        attributes: ['name'],
+        ],
       },
-    ],
-    attributes: ['id', 'name'],
-  })
-    .then(lecturer => res.status(200).send(lecturer))
-    .catch(() => res.boom.serverUnavailable());
-}
-
-function listWithReviews(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : '';
-
-  Lecturer.findAll({
-    where: {
-      [Op.or]: [
-        {
-          name: {
-            [Op.like]: `%${search}%`,
-          },
-        },
-      ],
-    },
-    include: [
-      {
-        model: Review,
-        as: 'reviews',
-        attributes: [],
-      },
-      {
-        model: School,
-        attributes: ['name'],
-      },
-    ],
-    attributes: {
       include: [
-        [fn('COUNT', col('reviews.id')), 'totalReviews'],
-        [fn('SUM', col('reviews.rating')), 'totalRatings'],
+        {
+          model: Review,
+          as: 'reviews',
+          attributes: [],
+        },
+        {
+          model: School,
+          attributes: ['name'],
+        },
       ],
-    },
-    order: [[literal('totalReviews'), 'DESC']],
-    group: ['Lecturer.id'],
-  })
-    .then(lecturers =>
-      res.status(200).send(
-        lecturers.map(a => {
-          a.dataValues.averageRating =
-            a.dataValues.totalRatings / a.dataValues.totalReviews;
+      attributes: [
+        'id',
+        'name',
+        [fn('COUNT', col('reviews.id')), 'totalReviews'],
+        [fn('AVG', col('reviews.rating')), 'averageRating'],
+      ],
+      order: [[literal('totalReviews'), 'DESC']],
+      group: ['Lecturer.id'],
+    });
 
-          delete a.dataValues.totalRatings;
-          return a;
-        })
-      )
-    )
-    .catch(() => res.boom.serverUnavailable());
+    return res.send(lecturers);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
 function reviews(req, res) {
@@ -242,7 +211,6 @@ function reduceCourses(array) {
 
 module.exports = {
   list,
-  listWithReviews,
   reviews,
   reviewsForCourse,
   courses,

@@ -33,7 +33,6 @@ module.exports = app => {
 
   // Lecturers
   app.get('/api/lecturers', lecturers.list);
-  app.get('/api/lecturers_reviews', lecturers.listWithReviews);
   app.get('/api/lecturers/:id', lecturers.get);
   app.get('/api/lecturers/:id/reviews', lecturers.reviews);
   app.get('/api/lecturers/:id/reviews/:courseId', lecturers.reviewsForCourse);
