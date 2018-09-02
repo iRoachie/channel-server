@@ -8,6 +8,26 @@ function list(_, res) {
     .catch(() => res.boom.serverUnavailable());
 }
 
+async function create(req, res) {
+  try {
+    const school = await School.create({
+      name: req.body.name,
+    });
+
+    res.send(school);
+  } catch (error) {
+    switch (error.name) {
+      case 'SequelizeValidationError':
+        return res.boom.badData('', {
+          errors: error.errors.map(a => a.message),
+        });
+
+      default:
+        return res.boom.serverUnavailable();
+    }
+  }
+}
+
 function update(req, res) {
   School.findById(req.params.id)
     .then(school => {
@@ -34,6 +54,7 @@ function update(req, res) {
 }
 
 module.exports = {
+  create,
   list,
   update,
 };

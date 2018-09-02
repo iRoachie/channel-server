@@ -28,6 +28,7 @@ module.exports = app => {
 
   // Schools
   app.get('/api/schools', schools.list);
+  app.post('/api/schools', schools.create);
   app.put('/api/schools/:id', schools.update);
 
   // Lecturers
