@@ -22,7 +22,7 @@ function list(req, res) {
     attributes: ['id', 'name'],
   })
     .then(lecturer => res.status(200).send(lecturer))
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function listWithReviews(req, res) {
@@ -69,19 +69,14 @@ function listWithReviews(req, res) {
         })
       )
     )
-    .catch(error => {
-      res.status(400).send(error);
-      throw new Error(error);
-    });
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function reviews(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
       if (!lecturer) {
-        return res.status(404).send({
-          message: 'Lecturer with id not found',
-        });
+        return res.boom.notFound(`Lecturer with id not found`);
       }
 
       Review.findAndCount({
@@ -102,18 +97,16 @@ function reviews(req, res) {
         .then(reviews => {
           res.status(200).send(reviews);
         })
-        .catch(error => res.status(400).send(error));
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function reviewsForCourse(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
       if (!lecturer) {
-        return res.status(404).send({
-          message: 'Lecturer with id not found',
-        });
+        return res.boom.notFound(`Lecturer with id not found`);
       }
 
       Review.findAll({
@@ -130,18 +123,16 @@ function reviewsForCourse(req, res) {
         .then(reviews => {
           res.status(200).send(reviews);
         })
-        .catch(error => res.status(400).send(error));
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function courses(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
       if (!lecturer) {
-        return res.status(404).send({
-          message: 'Lecturer with id not found',
-        });
+        return res.boom.notFound(`Lecturer with id not found`);
       }
 
       return Review.findAll({
@@ -156,9 +147,9 @@ function courses(req, res) {
         attributes: [],
       })
         .then(reviews => res.status(200).send(reduceCourses(reviews)))
-        .catch(error => res.status(400).send(error));
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(error => res.status(404).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function create(req, res) {
@@ -168,49 +159,55 @@ function create(req, res) {
     avatar: req.body.avatar,
   })
     .then(lecturer => res.status(200).send(lecturer))
-    .catch(error => res.status(400).send(error));
+    .catch(error => {
+      switch (error.name) {
+        case 'SequelizeValidationError':
+          return res.boom.badData('', {
+            errors: error.errors.map(a => a.message),
+          });
+        default:
+          return res.boom.serverUnavailable();
+      }
+    });
 }
 
 function get(req, res) {
-  Lecturer.findAll({
+  Lecturer.find({
     where: { id: req.params.id },
     include: [
       {
         model: School,
+        attributes: ['id', 'name'],
       },
     ],
     attributes: ['id', 'name'],
   })
     .then(lecturer => {
       if (!lecturer) {
-        return res.status(404).send({
-          message: 'Lecturer with id not found',
-        });
+        return res.boom.notFound(`Lecturer with id not found`);
       }
 
       return res.status(200).send(lecturer);
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
-function update(req, res) {
-  Lecturer.findById(req.params.id)
+function update({ body, params }, res) {
+  Lecturer.findById(params.id)
     .then(lecturer => {
       if (!lecturer) {
-        return res.status(404).send({
-          message: 'Lecturer with id not found',
-        });
+        return res.boom.notFound(`Lecturer with id not found`);
       }
 
       return lecturer
         .update({
-          schoolId: req.body.school_id || lecturer.schoolId,
-          name: req.body.name || lecturer.name,
+          schoolId: body.school_id || lecturer.schoolId,
+          name: body.name || lecturer.name,
         })
         .then(() => res.status(200).send(lecturer))
-        .catch(error => res.status(400).send(error));
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function reduceCourses(array) {
