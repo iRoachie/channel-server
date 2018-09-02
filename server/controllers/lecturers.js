@@ -42,6 +42,37 @@ async function list(req, res) {
   }
 }
 
+function get(req, res) {
+  Lecturer.find({
+    where: { id: req.params.id },
+    include: [
+      {
+        model: School,
+        attributes: ['id', 'name'],
+      },
+      {
+        model: Review,
+        as: 'reviews',
+        attributes: [],
+      },
+    ],
+    attributes: [
+      'id',
+      'name',
+      [fn('COUNT', col('reviews.id')), 'totalReviews'],
+      [fn('AVG', col('reviews.rating')), 'averageRating'],
+    ],
+  })
+    .then(lecturer => {
+      if (!lecturer) {
+        return res.boom.notFound(`Lecturer with id not found`);
+      }
+
+      return res.send(lecturer);
+    })
+    .catch(() => res.boom.serverUnavailable());
+}
+
 function reviews(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
@@ -139,27 +170,6 @@ function create(req, res) {
           return res.boom.serverUnavailable();
       }
     });
-}
-
-function get(req, res) {
-  Lecturer.find({
-    where: { id: req.params.id },
-    include: [
-      {
-        model: School,
-        attributes: ['id', 'name'],
-      },
-    ],
-    attributes: ['id', 'name'],
-  })
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
-
-      return res.status(200).send(lecturer);
-    })
-    .catch(() => res.boom.serverUnavailable());
 }
 
 function update({ body, params }, res) {
