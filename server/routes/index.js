@@ -23,6 +23,7 @@ module.exports = app => {
   // Courses
   app.get('/api/courses', courses.list);
   app.get('/api/courses/:courseId', courses.get);
+  app.get('/api/courses/:courseId/lecturers', courses.listReviewedLecturers);
   app.post('/api/courses', courses.create);
 
   // Schools

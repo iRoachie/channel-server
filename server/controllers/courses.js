@@ -1,4 +1,4 @@
-const { Course, Review } = require('../models');
+const { Course, Review, sequelize } = require('../models');
 const { Op, fn, col } = require('sequelize');
 
 function list(req, res) {
@@ -35,11 +35,11 @@ function list(req, res) {
 }
 
 function get(req, res) {
-  return Course.findOne({ where: { code: req.params.courseId } })
+  return Course.findOne({ where: { id: req.params.courseId } })
     .then(course => {
       if (!course) {
         return res.status(404).send({
-          message: 'No course with that code',
+          message: 'No course with that id',
         });
       }
 
@@ -57,8 +57,40 @@ function create(req, res) {
     .catch(error => res.status(400).send(error));
 }
 
+function listReviewedLecturers(req, res) {
+  const courseId = req.params.courseId;
+  return sequelize
+    .query(
+      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
+  INNER JOIN Reviews r
+  on r.lecturerId = l.id
+  INNER JOIN Schools s
+  on l.schoolId = s.id
+  where r.courseId = ?
+  GROUP BY r.courseId, r.lecturerId
+  ORDER BY totalReviews DESC;`,
+      { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
+    )
+    .then(results => {
+      res.send(
+        results.map(a => ({
+          id: a.id,
+          name: a.name,
+          totalReviews: a.totalReviews,
+          School: {
+            name: a.schoolName,
+          },
+        }))
+      );
+    })
+    .catch(() => {
+      res.boom.serverUnavailable();
+    });
+}
+
 module.exports = {
   list,
   get,
   create,
+  listReviewedLecturers,
 };
