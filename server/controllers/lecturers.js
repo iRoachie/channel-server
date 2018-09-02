@@ -42,122 +42,109 @@ async function list(req, res) {
   }
 }
 
-function get(req, res) {
-  Lecturer.find({
-    where: { id: req.params.id },
-    include: [
-      {
-        model: School,
-        attributes: ['id', 'name'],
-      },
-      {
-        model: Review,
-        as: 'reviews',
-        attributes: [],
-      },
-    ],
-    attributes: [
-      'id',
-      'name',
-      [fn('COUNT', col('reviews.id')), 'totalReviews'],
-      [fn('AVG', col('reviews.rating')), 'averageRating'],
-    ],
-  })
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
-
-      return res.send(lecturer);
-    })
-    .catch(() => res.boom.serverUnavailable());
-}
-
-function reviewsForCourse(req, res) {
-  Lecturer.findById(req.params.id)
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
-
-      Review.findAll({
-        order: [['id', 'DESC']],
-        where: { lecturerId: req.params.id, courseId: req.params.courseId },
-        include: [
-          {
-            model: User,
-            attributes: ['name', 'avatar'],
-          },
-        ],
-        attributes: ['id', 'semester', 'year', 'rating', 'comment'],
-      })
-        .then(reviews => {
-          res.status(200).send(reviews);
-        })
-        .catch(() => res.boom.serverUnavailable());
-    })
-    .catch(() => res.boom.serverUnavailable());
-}
-
-function courses(req, res) {
-  Lecturer.findById(req.params.id)
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
-
-      return Review.findAll({
-        where: { lecturerId: req.params.id },
-        include: [
-          {
-            model: Course,
-            attributes: ['id', 'code', 'name'],
-            group: ['Course.id'],
-          },
-        ],
-        attributes: [],
-      })
-        .then(reviews => res.status(200).send(reduceCourses(reviews)))
-        .catch(() => res.boom.serverUnavailable());
-    })
-    .catch(() => res.boom.serverUnavailable());
-}
-
-function create(req, res) {
-  Lecturer.create({
-    schoolId: req.body.school_id,
-    name: req.body.name,
-    avatar: req.body.avatar,
-  })
-    .then(lecturer => res.status(200).send(lecturer))
-    .catch(error => {
-      switch (error.name) {
-        case 'SequelizeValidationError':
-          return res.boom.badData('', {
-            errors: error.errors.map(a => a.message),
-          });
-        default:
-          return res.boom.serverUnavailable();
-      }
+async function get(req, res) {
+  try {
+    const lecturer = await Lecturer.find({
+      where: { id: req.params.id },
+      include: [
+        {
+          model: School,
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Review,
+          as: 'reviews',
+          attributes: [],
+        },
+      ],
+      attributes: [
+        'id',
+        'name',
+        [fn('COUNT', col('reviews.id')), 'totalReviews'],
+        [fn('AVG', col('reviews.rating')), 'averageRating'],
+      ],
     });
+
+    return res.send(lecturer);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
-function update({ body, params }, res) {
-  Lecturer.findById(params.id)
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
+async function reviewsForCourse(req, res) {
+  try {
+    const reviews = await Review.findAll({
+      order: [['id', 'DESC']],
+      where: { lecturerId: req.params.id, courseId: req.params.courseId },
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'avatar'],
+        },
+      ],
+      attributes: ['id', 'semester', 'year', 'rating', 'comment'],
+    });
 
-      return lecturer
-        .update({
-          schoolId: body.school_id || lecturer.schoolId,
-          name: body.name || lecturer.name,
-        })
-        .then(() => res.status(200).send(lecturer))
-        .catch(() => res.boom.serverUnavailable());
-    })
-    .catch(() => res.boom.serverUnavailable());
+    return res.send(reviews);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
+}
+
+async function courses(req, res) {
+  try {
+    const courses = await Review.findAll({
+      where: { lecturerId: req.params.id },
+      include: [
+        {
+          model: Course,
+          attributes: ['id', 'code', 'name'],
+          group: ['Course.id'],
+        },
+      ],
+      attributes: [],
+    });
+
+    return res.send(reduceCourses(courses));
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
+}
+
+async function create(req, res) {
+  try {
+    const lecturer = await Lecturer.create({
+      schoolId: req.body.school_id,
+      name: req.body.name,
+      avatar: req.body.avatar,
+    });
+
+    return res.send(lecturer);
+  } catch (error) {
+    switch (error.name) {
+      case 'SequelizeValidationError':
+        return res.boom.badData('', {
+          errors: error.errors.map(a => a.message),
+        });
+      default:
+        return res.boom.serverUnavailable();
+    }
+  }
+}
+
+async function update({ body, params }, res) {
+  try {
+    const lecturer = await Lecturer.findById(params.id);
+
+    await lecturer.update({
+      schoolId: body.school_id || lecturer.schoolId,
+      name: body.name || lecturer.name,
+    });
+
+    return res.send(lecturer);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
 function reduceCourses(array) {

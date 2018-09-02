@@ -1,83 +1,89 @@
 const { Course, Review, sequelize } = require('../models');
 const { Op, fn, col } = require('sequelize');
 
-function list(req, res) {
+async function list(req, res) {
   const search = req.query.search ? req.query.search.toLowerCase() : '';
 
-  return Course.findAll({
-    where: {
-      [Op.or]: [
-        {
-          code: {
-            [Op.like]: `%${search}%`,
+  try {
+    const courses = await Course.findAll({
+      where: {
+        [Op.or]: [
+          {
+            code: {
+              [Op.like]: `%${search}%`,
+            },
           },
-        },
-        {
-          name: {
-            [Op.like]: `%${search}%`,
+          {
+            name: {
+              [Op.like]: `%${search}%`,
+            },
           },
+        ],
+      },
+      include: [
+        {
+          model: Review,
+          attributes: [],
         },
       ],
-    },
-    include: [
-      {
-        model: Review,
-        attributes: [],
-      },
-    ],
-    attributes: [
-      'id',
-      'code',
-      'name',
-      [fn('COUNT', col('Reviews.id')), 'totalReviews'],
-    ],
-    group: ['Course.id'],
-  })
-    .then(courses => res.status(200).send(courses))
-    .catch(() => res.boom.serverUnavailable());
+      attributes: [
+        'id',
+        'code',
+        'name',
+        [fn('COUNT', col('Reviews.id')), 'totalReviews'],
+      ],
+      group: ['Course.id'],
+    });
+
+    res.send(courses);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
-function get(req, res) {
-  return Course.findOne({ where: { id: req.params.courseId } })
-    .then(course => {
-      if (!course) {
-        return res.boom.notFound('No course with that id');
-      }
+async function get(req, res) {
+  try {
+    const course = await Course.findOne({
+      where: { id: req.params.courseId },
+      attributes: ['id', 'code', 'name'],
+    });
 
-      return res.status(200).send(course);
-    })
-    .catch(() => res.boom.serverUnavailable());
+    if (!course) {
+      return res.boom.notFound('No course with that id');
+    }
+
+    return res.status(200).send(course);
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
-function create(req, res) {
-  return Course.create({
-    code: req.body.code,
-    name: req.body.name,
-  })
-    .then(course => res.status(200).send(course))
-    .catch(error => {
-      if (error.name === 'SequelizeValidationError') {
+async function create(req, res) {
+  try {
+    const course = await Course.create({
+      code: req.body.code,
+      name: req.body.name,
+    });
+
+    return res.send(course);
+  } catch (error) {
+    switch (error.name) {
+      case 'SequelizeValidationError':
         return res.boom.badData('', {
           errors: error.errors.map(a => a.message),
         });
-      }
-
-      res.boom.serverUnavailable();
-    });
+      default:
+        return res.boom.serverUnavailable();
+    }
+  }
 }
 
-function listReviewedLecturers(req, res) {
+async function listReviewedLecturers(req, res) {
   const courseId = req.params.courseId;
 
-  return Course.findById(courseId)
-    .then(course => {
-      if (!course) {
-        return res.boom.notFound('No course with that id');
-      }
-
-      return sequelize
-        .query(
-          `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
+  try {
+    const results = await sequelize.query(
+      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
   INNER JOIN Reviews r
   on r.lecturerId = l.id
   INNER JOIN Schools s
@@ -85,23 +91,22 @@ function listReviewedLecturers(req, res) {
   where r.courseId = ?
   GROUP BY r.courseId, r.lecturerId
   ORDER BY totalReviews DESC;`,
-          { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
-        )
-        .then(results => {
-          res.send(
-            results.map(a => ({
-              id: a.id,
-              name: a.name,
-              totalReviews: a.totalReviews,
-              School: {
-                name: a.schoolName,
-              },
-            }))
-          );
-        })
-        .catch(() => res.boom.serverUnavailable());
-    })
-    .catch(() => res.boom.serverUnavailable());
+      { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
+    );
+
+    return res.send(
+      results.map(a => ({
+        id: a.id,
+        name: a.name,
+        totalReviews: a.totalReviews,
+        School: {
+          name: a.schoolName,
+        },
+      }))
+    );
+  } catch (error) {
+    return res.boom.serverUnavailable();
+  }
 }
 
 module.exports = {
