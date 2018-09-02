@@ -25,9 +25,12 @@ function list(req, res) {
         attributes: [],
       },
     ],
-    attributes: {
-      include: [[fn('COUNT', col('Reviews.id')), 'totalReviews']],
-    },
+    attributes: [
+      'id',
+      'code',
+      'name',
+      [fn('COUNT', col('Reviews.id')), 'totalReviews'],
+    ],
     group: ['Course.id'],
   })
     .then(courses => res.status(200).send(courses))
