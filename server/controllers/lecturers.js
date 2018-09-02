@@ -73,36 +73,6 @@ function get(req, res) {
     .catch(() => res.boom.serverUnavailable());
 }
 
-function reviews(req, res) {
-  Lecturer.findById(req.params.id)
-    .then(lecturer => {
-      if (!lecturer) {
-        return res.boom.notFound(`Lecturer with id not found`);
-      }
-
-      Review.findAndCount({
-        order: [['id', 'DESC']],
-        where: { lecturerId: req.params.id },
-        include: [
-          {
-            model: User,
-            attributes: ['name', 'avatar'],
-          },
-          {
-            model: Course,
-            attributes: ['code', 'name'],
-          },
-        ],
-        attributes: ['id', 'semester', 'year', 'rating', 'comment'],
-      })
-        .then(reviews => {
-          res.status(200).send(reviews);
-        })
-        .catch(() => res.boom.serverUnavailable());
-    })
-    .catch(() => res.boom.serverUnavailable());
-}
-
 function reviewsForCourse(req, res) {
   Lecturer.findById(req.params.id)
     .then(lecturer => {
@@ -221,7 +191,6 @@ function reduceCourses(array) {
 
 module.exports = {
   list,
-  reviews,
   reviewsForCourse,
   courses,
   create,

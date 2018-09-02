@@ -1,8 +1,20 @@
 const { Course, Lecturer, Review, User } = require('../models');
+const { Op } = require('sequelize');
 
-async function list(_, res) {
+async function list(req, res) {
+  const lecturerId = req.query.lecturerId || '';
+
   try {
     const reviews = await Review.findAll({
+      where: {
+        [Op.or]: [
+          {
+            lecturerId: {
+              [Op.like]: `%${lecturerId}%`,
+            },
+          },
+        ],
+      },
       include: [
         {
           model: User,
