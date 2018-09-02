@@ -65,9 +65,16 @@ function create(req, res) {
 
 function listReviewedLecturers(req, res) {
   const courseId = req.params.courseId;
-  return sequelize
-    .query(
-      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
+
+  return Course.findById(courseId)
+    .then(course => {
+      if (!course) {
+        return res.boom.notFound('No course with that id');
+      }
+
+      return sequelize
+        .query(
+          `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
   INNER JOIN Reviews r
   on r.lecturerId = l.id
   INNER JOIN Schools s
@@ -75,23 +82,23 @@ function listReviewedLecturers(req, res) {
   where r.courseId = ?
   GROUP BY r.courseId, r.lecturerId
   ORDER BY totalReviews DESC;`,
-      { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
-    )
-    .then(results => {
-      res.send(
-        results.map(a => ({
-          id: a.id,
-          name: a.name,
-          totalReviews: a.totalReviews,
-          School: {
-            name: a.schoolName,
-          },
-        }))
-      );
+          { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
+        )
+        .then(results => {
+          res.send(
+            results.map(a => ({
+              id: a.id,
+              name: a.name,
+              totalReviews: a.totalReviews,
+              School: {
+                name: a.schoolName,
+              },
+            }))
+          );
+        })
+        .catch(() => res.boom.serverUnavailable());
     })
-    .catch(() => {
-      res.boom.serverUnavailable();
-    });
+    .catch(() => res.boom.serverUnavailable());
 }
 
 module.exports = {
