@@ -28,6 +28,10 @@ async function create(req, res) {
         return res.boom.badData('', {
           errors: error.errors.map(a => a.message),
         });
+      case 'SequelizeUniqueConstraintError':
+        return res.boom.conflict('', {
+          errors: error.errors.map(a => a.message),
+        });
       default:
         res.status(500).send(error);
     }
