@@ -5,6 +5,9 @@ module.exports = (sequelize, DataTypes) => {
       semester: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          isIn: ['September', 'Summer', 'January'],
+        },
       },
       year: {
         type: DataTypes.INTEGER,

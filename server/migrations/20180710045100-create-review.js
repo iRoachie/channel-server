@@ -11,15 +11,29 @@ module.exports = {
       },
       semester: {
         type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+          isIn: ['September', 'Summer', 'January'],
+        },
       },
       year: {
         type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+          max: new Date().getFullYear(),
+        },
       },
       comment: {
         type: Sequelize.TEXT,
       },
       rating: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        validations: {
+          isNumeric: true,
+          min: 1,
+          max: 5,
+        },
       },
       createdAt: {
         allowNull: false,
