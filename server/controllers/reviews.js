@@ -30,12 +30,23 @@ function create(req, res) {
         rating: req.body.rating,
         comment: req.body.comment,
       })
-        .then(review => {
-          res.send(review);
-        })
-        .catch(error => res.boom.badRequest(error));
+        .then(review => res.send(review))
+        .catch(error => {
+          switch (error.name) {
+            case 'SequelizeForeignKeyConstraintError':
+              return res.boom.conflict('', {
+                errors: error.fields.map(a => `Constraint failed for ${a}`),
+              });
+            case 'SequelizeValidationError':
+              return res.boom.badData('', {
+                errors: error.errors.map(a => a.message),
+              });
+            default:
+              res.boom.serverUnavailable();
+          }
+        });
     })
-    .catch(error => res.boom.badRequest(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 module.exports = {
