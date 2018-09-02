@@ -31,21 +31,19 @@ function list(req, res) {
     group: ['Course.id'],
   })
     .then(courses => res.status(200).send(courses))
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function get(req, res) {
   return Course.findOne({ where: { id: req.params.courseId } })
     .then(course => {
       if (!course) {
-        return res.status(404).send({
-          message: 'No course with that id',
-        });
+        return res.boom.notFound('No course with that id');
       }
 
       return res.status(200).send(course);
     })
-    .catch(error => res.status(400).send(error));
+    .catch(() => res.boom.serverUnavailable());
 }
 
 function create(req, res) {
@@ -54,7 +52,15 @@ function create(req, res) {
     name: req.body.name,
   })
     .then(course => res.status(200).send(course))
-    .catch(error => res.status(400).send(error));
+    .catch(error => {
+      if (error.name === 'SequelizeValidationError') {
+        return res.boom.badData('', {
+          errors: error.errors.map(a => a.message),
+        });
+      }
+
+      res.boom.serverUnavailable();
+    });
 }
 
 function listReviewedLecturers(req, res) {
