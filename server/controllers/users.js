@@ -1,24 +1,13 @@
 const admin = require('firebase-admin');
 const { User } = require('../models');
-const { DEFAULT_AVATAR } = require('../config/constants');
 
 async function create(req, res) {
   let { id, name, avatar } = req.body;
 
   if (!id) {
-    res.status(422).send({
-      message: 'Missing param `id` in body',
+    return res.boom.badData('', {
+      errors: ['User.id cannot be null'],
     });
-  }
-
-  if (!name) {
-    res.status(422).send({
-      message: 'Missing param `name` in body',
-    });
-  }
-
-  if (!avatar) {
-    avatar = DEFAULT_AVATAR;
   }
 
   try {
@@ -34,7 +23,14 @@ async function create(req, res) {
       },
     });
   } catch (error) {
-    res.status(500).send(error);
+    switch (error.name) {
+      case 'SequelizeValidationError':
+        return res.boom.badData('', {
+          errors: error.errors.map(a => a.message),
+        });
+      default:
+        res.status(500).send(error);
+    }
   }
 }
 
@@ -43,14 +39,12 @@ async function get(req, res) {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      res.status(404).send({
-        message: 'User not found',
-      });
+      return res.boom.notFound('User not found');
     }
 
     res.status(200).send(user);
   } catch (error) {
-    res.status(500).send(error);
+    return res.boom.serverUnavailable();
   }
 }
 
@@ -59,9 +53,7 @@ async function update(req, res) {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      res.status(404).send({
-        message: 'User not found',
-      });
+      return res.boom.notFound('User not found');
     }
 
     const { name, avatar } = req.body;
@@ -79,16 +71,16 @@ async function update(req, res) {
 
     res.status(200).send(updatedUser);
   } catch (error) {
-    res.status(500).send(error);
+    return res.boom.serverUnavailable();
   }
 }
 
 async function list(_, res) {
   try {
     const users = await User.all();
-    res.status(200).send(users);
+    return res.status(200).send(users);
   } catch (error) {
-    res.status(500).send(error);
+    return res.boom.serverUnavailable();
   }
 }
 
@@ -98,4 +90,3 @@ module.exports = {
   update,
   list,
 };
-``;

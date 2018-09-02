@@ -1,3 +1,5 @@
+const { DEFAULT_AVATAR } = require('../config/constants');
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
@@ -9,8 +11,14 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
-    avatar: DataTypes.STRING,
+    avatar: {
+      type: DataTypes.STRING,
+      defaultValue: DEFAULT_AVATAR,
+    },
   });
 
   User.associate = () => {
