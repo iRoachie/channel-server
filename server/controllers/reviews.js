@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 
 async function list(req, res) {
   const lecturerId = req.query.lecturerId || '';
+  const courseId = req.query.courseId || '';
 
   try {
     const reviews = await Review.findAll({
@@ -11,6 +12,9 @@ async function list(req, res) {
           {
             lecturerId: {
               [Op.like]: `%${lecturerId}%`,
+            },
+            courseId: {
+              [Op.like]: `%${courseId}%`,
             },
           },
         ],

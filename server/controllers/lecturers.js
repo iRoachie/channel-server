@@ -71,26 +71,6 @@ async function get(req, res) {
   }
 }
 
-async function reviewsForCourse(req, res) {
-  try {
-    const reviews = await Review.findAll({
-      order: [['id', 'DESC']],
-      where: { lecturerId: req.params.id, courseId: req.params.courseId },
-      include: [
-        {
-          model: User,
-          attributes: ['name', 'avatar'],
-        },
-      ],
-      attributes: ['id', 'semester', 'year', 'rating', 'comment'],
-    });
-
-    return res.send(reviews);
-  } catch (error) {
-    return res.boom.serverUnavailable();
-  }
-}
-
 async function courses(req, res) {
   try {
     const courses = await Review.findAll({
@@ -178,7 +158,6 @@ function reduceCourses(array) {
 
 module.exports = {
   list,
-  reviewsForCourse,
   courses,
   create,
   get,
