@@ -9,12 +9,15 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       cover: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       magazine: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
