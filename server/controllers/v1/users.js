@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const { User } = require('../models');
+const { User } = require('../../models');
 
 async function create(req, res) {
   let { id, name, avatar } = req.body;

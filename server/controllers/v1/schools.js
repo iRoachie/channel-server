@@ -1,4 +1,4 @@
-const { School } = require('../models');
+const { School } = require('../../models');
 
 async function list(_, res) {
   try {

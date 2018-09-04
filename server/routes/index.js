@@ -1,49 +1,50 @@
-const {
-  users,
-  courses,
-  schools,
-  lecturers,
-  reviews,
-  releases,
-} = require('../controllers');
+const express = require('express');
+const { apiVersion1 } = require('../controllers');
 
 module.exports = app => {
-  app.get('/api', (_, res) =>
+  const v1 = express.Router();
+
+  app.use('/v1', v1);
+
+  v1.get('/', (_, res) =>
     res.status(200).send({
       message: 'Welcome to the Channel API!',
     })
   );
 
   // Users
-  app.get('/api/users', users.list);
-  app.get('/api/users/:id', users.get);
-  app.put('/api/users/:id', users.update);
-  app.post('/api/users', users.create);
+  v1.get('/users', apiVersion1.users.list);
+  v1.get('/users/:id', apiVersion1.users.get);
+  v1.put('/users/:id', apiVersion1.users.update);
+  v1.post('/users', apiVersion1.users.create);
 
   // Courses
-  app.get('/api/courses', courses.list);
-  app.get('/api/courses/:courseId', courses.get);
-  app.get('/api/courses/:courseId/lecturers', courses.listReviewedLecturers);
-  app.post('/api/courses', courses.create);
+  v1.get('/courses', apiVersion1.courses.list);
+  v1.get('/courses/:courseId', apiVersion1.courses.get);
+  v1.get(
+    '/courses/:courseId/lecturers',
+    apiVersion1.courses.listReviewedLecturers
+  );
+  v1.post('/courses', apiVersion1.courses.create);
 
   // Schools
-  app.get('/api/schools', schools.list);
-  app.post('/api/schools', schools.create);
-  app.put('/api/schools/:id', schools.update);
+  v1.get('/schools', apiVersion1.schools.list);
+  v1.post('/schools', apiVersion1.schools.create);
+  v1.put('/schools/:id', apiVersion1.schools.update);
 
   // Lecturers
-  app.get('/api/lecturers', lecturers.list);
-  app.get('/api/lecturers/:id', lecturers.get);
-  app.get('/api/lecturers/:id/courses', lecturers.courses);
-  app.post('/api/lecturers', lecturers.create);
-  app.put('/api/lecturers/:id', lecturers.update);
+  v1.get('/lecturers', apiVersion1.lecturers.list);
+  v1.get('/lecturers/:id', apiVersion1.lecturers.get);
+  v1.get('/lecturers/:id/courses', apiVersion1.lecturers.courses);
+  v1.post('/lecturers', apiVersion1.lecturers.create);
+  v1.put('/lecturers/:id', apiVersion1.lecturers.update);
 
   // Reviews
-  app.get('/api/reviews', reviews.list);
-  app.post('/api/reviews', reviews.create);
+  v1.get('/reviews', apiVersion1.reviews.list);
+  v1.post('/reviews', apiVersion1.reviews.create);
 
   // Releases
-  app.get('/api/releases', releases.list);
-  app.post('/api/releases', releases.create);
-  app.put('/api/releases/:id', releases.update);
+  v1.get('/releases', apiVersion1.releases.list);
+  v1.post('/releases', apiVersion1.releases.create);
+  v1.put('/releases/:id', apiVersion1.releases.update);
 };

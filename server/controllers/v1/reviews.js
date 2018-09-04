@@ -1,4 +1,4 @@
-const { Course, Lecturer, Review, User } = require('../models');
+const { Course, Lecturer, Review, User } = require('../../models');
 const { Op } = require('sequelize');
 
 async function list(req, res) {

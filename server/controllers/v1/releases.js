@@ -1,4 +1,4 @@
-const { Release } = require('../models');
+const { Release } = require('../../models');
 
 async function list(_, res) {
   try {

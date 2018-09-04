@@ -31,7 +31,7 @@ admin.initializeApp({
 
 require('./server/routes')(app);
 app.get('*', (_, res) =>
-  res.status(200).send({
+  res.status(404).send({
     message: 'Welcome to the beginning of nothingness.',
   })
 );
