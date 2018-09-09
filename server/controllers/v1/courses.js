@@ -83,24 +83,25 @@ async function listReviewedLecturers(req, res) {
 
   try {
     const results = await sequelize.query(
-      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews FROM Lecturers l
-  INNER JOIN Reviews r
-  on r.lecturerId = l.id
-  INNER JOIN Schools s
-  on l.schoolId = s.id
-  where r.courseId = ?
-  GROUP BY r.courseId, r.lecturerId
-  ORDER BY totalReviews DESC;`,
+      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews, AVG(r.rating) as averageRating FROM Lecturers l
+      INNER JOIN Reviews r
+      on r.lecturerId = l.id
+      INNER JOIN Schools s
+      on l.schoolId = s.id
+      where r.courseId = ?
+      GROUP BY r.courseId, r.lecturerId
+      ORDER BY averageRating DESC, totalReviews DESC;`,
       { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
     );
 
     return res.send(
-      results.map(a => ({
-        id: a.id,
-        name: a.name,
-        totalReviews: a.totalReviews,
+      results.map(({ id, name, totalReviews, schoolName, averageRating }) => ({
+        id,
+        name,
+        totalReviews,
+        averageRating,
         School: {
-          name: a.schoolName,
+          name: schoolName,
         },
       }))
     );
