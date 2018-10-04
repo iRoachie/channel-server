@@ -1,6 +1,5 @@
 const { Course, Lecturer, Review, User } = require(`../../models`);
 const { validateParams, paginateResults } = require(`../../util`);
-const { Op } = require(`sequelize`);
 
 async function list(req, res) {
   const lecturerId = req.query.lecturerId || ``;
@@ -19,16 +18,8 @@ async function list(req, res) {
       limit,
       offset: skip,
       where: {
-        [Op.or]: [
-          {
-            lecturerId: {
-              [Op.like]: `%${lecturerId}%`,
-            },
-            courseId: {
-              [Op.like]: `%${courseId}%`,
-            },
-          },
-        ],
+        ...(!!lecturerId && { lecturerId }),
+        ...(!!courseId && { courseId }),
       },
       include: [
         {
