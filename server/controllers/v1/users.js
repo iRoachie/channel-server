@@ -1,12 +1,12 @@
-const admin = require('firebase-admin');
-const { User } = require('../../models');
+const admin = require(`firebase-admin`);
+const { User } = require(`../../models`);
 
 async function create(req, res) {
   let { id, name, avatar } = req.body;
 
   if (!id) {
-    return res.boom.badData('', {
-      errors: ['User.id cannot be null'],
+    return res.boom.badData(``, {
+      errors: [`User.id cannot be null`],
     });
   }
 
@@ -20,12 +20,12 @@ async function create(req, res) {
     res.send(user.dataValues);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
-      case 'SequelizeUniqueConstraintError':
-        return res.boom.conflict('', {
+      case `SequelizeUniqueConstraintError`:
+        return res.boom.conflict(``, {
           errors: error.errors.map(a => a.message),
         });
       default:
@@ -39,7 +39,7 @@ async function get(req, res) {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.boom.notFound('User not found');
+      return res.boom.notFound(`User not found`);
     }
 
     res.send(user);
@@ -53,7 +53,7 @@ async function update(req, res) {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.boom.notFound('User not found');
+      return res.boom.notFound(`User not found`);
     }
 
     const { name, avatar } = req.body;

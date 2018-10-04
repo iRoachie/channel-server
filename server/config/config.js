@@ -1,7 +1,7 @@
-require('dotenv').load();
+require(`dotenv`).load();
 
 const defaults = {
-  dialect: 'mysql',
+  dialect: `mysql`,
   dialectOptions: {
     decimalNumbers: true,
   },
@@ -10,10 +10,10 @@ const defaults = {
 
 module.exports = {
   development: {
-    username: 'root',
-    password: 'root',
-    database: 'channel-app',
-    host: '127.0.0.1',
+    username: `root`,
+    password: `root`,
+    database: `channel-app`,
+    host: `127.0.0.1`,
     port: 13306,
     ...defaults,
   },

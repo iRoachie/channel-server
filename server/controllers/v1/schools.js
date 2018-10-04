@@ -1,5 +1,5 @@
-const { School } = require('../../models');
-const { validateParams, paginateResults } = require('../../util');
+const { School } = require(`../../models`);
+const { validateParams, paginateResults } = require(`../../util`);
 
 async function list(req, res) {
   const valid = validateParams(req, res);
@@ -14,7 +14,7 @@ async function list(req, res) {
     const { rows, count } = await School.findAndCountAll({
       offset: skip,
       limit,
-      attributes: ['id', 'name'],
+      attributes: [`id`, `name`],
     });
 
     res.send(paginateResults({ rows, count, skip, limit }));
@@ -32,8 +32,8 @@ async function create(req, res) {
     res.send(school);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
 
@@ -48,7 +48,7 @@ async function update(req, res) {
     const school = await School.findById(req.params.id);
 
     if (!school) {
-      return res.boom.notFound('School not found for id');
+      return res.boom.notFound(`School not found for id`);
     }
 
     await school.update({
@@ -58,8 +58,8 @@ async function update(req, res) {
     res.send(school);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
       default:

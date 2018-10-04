@@ -1,6 +1,6 @@
-const { Lecturer, Review, School, Course } = require('../../models');
-const { Op, fn, col, literal } = require('sequelize');
-const { paginateResults, validateParams } = require('../../util');
+const { Lecturer, Review, School, Course } = require(`../../models`);
+const { Op, fn, col, literal } = require(`sequelize`);
+const { paginateResults, validateParams } = require(`../../util`);
 
 async function list(req, res) {
   const valid = validateParams(req, res);
@@ -28,22 +28,22 @@ async function list(req, res) {
       include: [
         {
           model: Review,
-          as: 'reviews',
+          as: `reviews`,
           attributes: [],
         },
         {
           model: School,
-          attributes: ['name'],
+          attributes: [`name`],
         },
       ],
       attributes: [
-        'id',
-        'name',
-        [fn('COUNT', col('reviews.id')), 'totalReviews'],
-        [fn('AVG', col('reviews.rating')), 'averageRating'],
+        `id`,
+        `name`,
+        [fn(`COUNT`, col(`reviews.id`)), `totalReviews`],
+        [fn(`AVG`, col(`reviews.rating`)), `averageRating`],
       ],
-      order: [[literal('totalReviews'), 'DESC']],
-      group: ['Lecturer.id'],
+      order: [[literal(`totalReviews`), `DESC`]],
+      group: [`Lecturer.id`],
     });
 
     return res.send(paginateResults({ count, limit, skip, rows }));
@@ -59,19 +59,19 @@ async function get(req, res) {
       include: [
         {
           model: School,
-          attributes: ['id', 'name'],
+          attributes: [`id`, `name`],
         },
         {
           model: Review,
-          as: 'reviews',
+          as: `reviews`,
           attributes: [],
         },
       ],
       attributes: [
-        'id',
-        'name',
-        [fn('COUNT', col('reviews.id')), 'totalReviews'],
-        [fn('AVG', col('reviews.rating')), 'averageRating'],
+        `id`,
+        `name`,
+        [fn(`COUNT`, col(`reviews.id`)), `totalReviews`],
+        [fn(`AVG`, col(`reviews.rating`)), `averageRating`],
       ],
     });
 
@@ -88,8 +88,8 @@ async function courses(req, res) {
       include: [
         {
           model: Course,
-          attributes: ['id', 'code', 'name'],
-          group: ['Course.id'],
+          attributes: [`id`, `code`, `name`],
+          group: [`Course.id`],
         },
       ],
       attributes: [],
@@ -112,8 +112,8 @@ async function create(req, res) {
     return res.send(lecturer);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
       default:
@@ -149,11 +149,11 @@ function reduceCourses(array) {
           a =>
             a.Course.code === cur.Course.code
               ? {
-                  Course: {
-                    ...a.Course,
-                    reviews: a.Course.reviews + 1,
-                  },
-                }
+                Course: {
+                  ...a.Course,
+                  reviews: a.Course.reviews + 1,
+                },
+              }
               : a
         );
       }

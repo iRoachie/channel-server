@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Course = sequelize.define('Course', {
+  const Course = sequelize.define(`Course`, {
     code: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Course.associate = models => {
     Course.hasMany(models.Review, {
-      foreignKey: 'courseId',
+      foreignKey: `courseId`,
     });
   };
 

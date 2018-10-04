@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
   const Review = sequelize.define(
-    'Review',
+    `Review`,
     {
       semester: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          isIn: ['September', 'Summer', 'January'],
+          isIn: [`September`, `Summer`, `January`],
         },
       },
       year: {
@@ -33,15 +33,15 @@ module.exports = (sequelize, DataTypes) => {
   Review.associate = models => {
     // associations can be defined here
     Review.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: `userId`,
     });
 
     Review.belongsTo(models.Lecturer, {
-      foreignKey: 'lecturerId',
+      foreignKey: `lecturerId`,
     });
 
     Review.belongsTo(models.Course, {
-      foreignKey: 'courseId',
+      foreignKey: `courseId`,
     });
   };
 

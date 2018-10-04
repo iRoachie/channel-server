@@ -1,10 +1,10 @@
-const { Course, Lecturer, Review, User } = require('../../models');
-const { validateParams, paginateResults } = require('../../util');
-const { Op } = require('sequelize');
+const { Course, Lecturer, Review, User } = require(`../../models`);
+const { validateParams, paginateResults } = require(`../../util`);
+const { Op } = require(`sequelize`);
 
 async function list(req, res) {
-  const lecturerId = req.query.lecturerId || '';
-  const courseId = req.query.courseId || '';
+  const lecturerId = req.query.lecturerId || ``;
+  const courseId = req.query.courseId || ``;
 
   const valid = validateParams(req, res);
 
@@ -33,18 +33,18 @@ async function list(req, res) {
       include: [
         {
           model: User,
-          attributes: ['name', 'avatar'],
+          attributes: [`name`, `avatar`],
         },
         {
           model: Course,
-          attributes: ['code', 'name'],
+          attributes: [`code`, `name`],
         },
         {
           model: Lecturer,
-          attributes: ['name'],
+          attributes: [`name`],
         },
       ],
-      attributes: ['id', 'semester', 'year', 'comment', 'rating'],
+      attributes: [`id`, `semester`, `year`, `comment`, `rating`],
     });
 
     return res.send(paginateResults({ count, rows, limit, skip }));
@@ -82,12 +82,12 @@ async function create(req, res) {
     return res.send(review);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeForeignKeyConstraintError':
-        return res.boom.conflict('', {
+      case `SequelizeForeignKeyConstraintError`:
+        return res.boom.conflict(``, {
           errors: error.fields.map(a => `Constraint failed for ${a}`),
         });
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
       default:

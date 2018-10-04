@@ -1,10 +1,10 @@
 'use strict';
 
-const { DEFAULT_AVATAR } = require('../config/constants');
+const { DEFAULT_AVATAR } = require(`../config/constants`);
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
+    return queryInterface.createTable(`Users`, {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -33,6 +33,6 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('Users');
+    return queryInterface.dropTable(`Users`);
   },
 };

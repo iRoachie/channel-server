@@ -1,15 +1,15 @@
 const validateParams = (req, res) => {
-  let limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
-  const skip = !!req.query.skip ? parseInt(req.query.skip) : 0;
-  const search = !!req.query.search ? req.query.search.toLowerCase() : '';
+  let limit = req.query.limit ? parseInt(req.query.limit) : 25;
+  const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  const search = req.query.search ? req.query.search.toLowerCase() : ``;
 
   if (isNaN(limit)) {
-    res.boom.badRequest('limit should be a number');
+    res.boom.badRequest(`limit should be a number`);
     return false;
   }
 
   if (isNaN(skip)) {
-    res.boom.badRequest('skip should be a number');
+    res.boom.badRequest(`skip should be a number`);
     return false;
   }
 

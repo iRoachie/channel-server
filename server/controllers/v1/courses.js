@@ -1,6 +1,6 @@
-const { Course, Review, sequelize } = require('../../models');
-const { Op, fn, col } = require('sequelize');
-const { paginateResults, validateParams } = require('../../util');
+const { Course, Review, sequelize } = require(`../../models`);
+const { Op, fn, col } = require(`sequelize`);
+const { paginateResults, validateParams } = require(`../../util`);
 
 async function list(req, res) {
   const valid = validateParams(req, res);
@@ -37,12 +37,12 @@ async function list(req, res) {
         },
       ],
       attributes: [
-        'id',
-        'code',
-        'name',
-        [fn('COUNT', col('Reviews.id')), 'totalReviews'],
+        `id`,
+        `code`,
+        `name`,
+        [fn(`COUNT`, col(`Reviews.id`)), `totalReviews`],
       ],
-      group: ['Course.id'],
+      group: [`Course.id`],
     });
 
     res.send(paginateResults({ count, limit, skip, rows }));
@@ -55,11 +55,11 @@ async function get(req, res) {
   try {
     const course = await Course.findOne({
       where: { id: req.params.courseId },
-      attributes: ['id', 'code', 'name'],
+      attributes: [`id`, `code`, `name`],
     });
 
     if (!course) {
-      return res.boom.notFound('No course with that id');
+      return res.boom.notFound(`No course with that id`);
     }
 
     return res.status(200).send(course);
@@ -78,8 +78,8 @@ async function create(req, res) {
     return res.send(course);
   } catch (error) {
     switch (error.name) {
-      case 'SequelizeValidationError':
-        return res.boom.badData('', {
+      case `SequelizeValidationError`:
+        return res.boom.badData(``, {
           errors: error.errors.map(a => a.message),
         });
       default:

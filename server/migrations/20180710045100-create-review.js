@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Reviews', {
+    return queryInterface.createTable(`Reviews`, {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-          isIn: ['September', 'Summer', 'January'],
+          isIn: [`September`, `Summer`, `January`],
         },
       },
       year: {
@@ -46,6 +46,6 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('Reviews');
+    return queryInterface.dropTable(`Reviews`);
   },
 };

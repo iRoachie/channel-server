@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Lecturer = sequelize.define(
-    'Lecturer',
+    `Lecturer`,
     {
       name: {
         type: DataTypes.STRING,
@@ -14,12 +14,12 @@ module.exports = (sequelize, DataTypes) => {
   Lecturer.associate = models => {
     // associations can be defined here
     Lecturer.belongsTo(models.School, {
-      foreignKey: 'schoolId',
+      foreignKey: `schoolId`,
     });
 
     Lecturer.hasMany(models.Review, {
-      foreignKey: 'lecturerId',
-      as: 'reviews',
+      foreignKey: `lecturerId`,
+      as: `reviews`,
     });
   };
 
