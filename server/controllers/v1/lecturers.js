@@ -1,11 +1,22 @@
 const { Lecturer, Review, School, Course } = require('../../models');
 const { Op, fn, col, literal } = require('sequelize');
+const { paginateResults } = require('../../util');
 
 async function list(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : '';
+  const search = !!req.query.search ? req.query.search.toLowerCase() : '';
+  const limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
+  const skip = !!req.query.skip ? parseInt(req.query.skip) : 0;
+
+  if (typeof limit !== 'number') {
+    res.boom.badRequest('limit should be a number');
+    return;
+  }
 
   try {
-    const lecturers = await Lecturer.findAll({
+    const { rows, count } = await Lecturer.findAndCountAll({
+      limit,
+      offset: skip,
+      subQuery: false,
       where: {
         [Op.or]: [
           {
@@ -36,7 +47,7 @@ async function list(req, res) {
       group: ['Lecturer.id'],
     });
 
-    return res.send(lecturers);
+    return res.send(paginateResults({ count, limit, skip, rows }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }

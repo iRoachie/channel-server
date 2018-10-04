@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize');
 require('dotenv').load();
 
 const defaults = {
@@ -6,7 +5,7 @@ const defaults = {
   dialectOptions: {
     decimalNumbers: true,
   },
-  operatorsAliases: Sequelize.Op,
+  operatorsAliases: false,
 };
 
 module.exports = {
