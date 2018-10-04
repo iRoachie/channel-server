@@ -1,5 +1,5 @@
 const validateParams = (req, res) => {
-  const limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
+  let limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
   const skip = !!req.query.skip ? parseInt(req.query.skip) : 0;
   const search = !!req.query.search ? req.query.search.toLowerCase() : '';
 
@@ -11,6 +11,10 @@ const validateParams = (req, res) => {
   if (isNaN(skip)) {
     res.boom.badRequest('skip should be a number');
     return false;
+  }
+
+  if (limit === 0) {
+    limit = undefined;
   }
 
   return { limit, skip, search };
@@ -25,7 +29,7 @@ const paginateResults = ({ count, limit, skip, rows }) => {
   const response = {
     pageInfo: {
       totalResults: realCount,
-      resultsPerPage: limit,
+      resultsPerPage: limit ? limit : realCount,
       skip,
     },
   };
