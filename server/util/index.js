@@ -1,3 +1,21 @@
+const validateParams = (req, res) => {
+  const limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
+  const skip = !!req.query.skip ? parseInt(req.query.skip) : 0;
+  const search = !!req.query.search ? req.query.search.toLowerCase() : '';
+
+  if (isNaN(limit)) {
+    res.boom.badRequest('limit should be a number');
+    return false;
+  }
+
+  if (isNaN(skip)) {
+    res.boom.badRequest('skip should be a number');
+    return false;
+  }
+
+  return { limit, skip, search };
+};
+
 const paginateResults = ({ count, limit, skip, rows }) => {
   /**
    * Necessary because of https://github.com/sequelize/sequelize/issues/6148
@@ -23,4 +41,5 @@ const paginateResults = ({ count, limit, skip, rows }) => {
 
 module.exports = {
   paginateResults,
+  validateParams,
 };

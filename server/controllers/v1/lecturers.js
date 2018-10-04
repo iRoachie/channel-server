@@ -1,16 +1,15 @@
 const { Lecturer, Review, School, Course } = require('../../models');
 const { Op, fn, col, literal } = require('sequelize');
-const { paginateResults } = require('../../util');
+const { paginateResults, validateParams } = require('../../util');
 
 async function list(req, res) {
-  const search = !!req.query.search ? req.query.search.toLowerCase() : '';
-  const limit = !!req.query.limit ? parseInt(req.query.limit) : 25;
-  const skip = !!req.query.skip ? parseInt(req.query.skip) : 0;
+  const valid = validateParams(req, res);
 
-  if (typeof limit !== 'number') {
-    res.boom.badRequest('limit should be a number');
+  if (!valid) {
     return;
   }
+
+  const { limit, skip, search } = valid;
 
   try {
     const { rows, count } = await Lecturer.findAndCountAll({
