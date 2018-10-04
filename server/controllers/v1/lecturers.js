@@ -82,8 +82,18 @@ async function get(req, res) {
 }
 
 async function courses(req, res) {
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { limit, skip } = valid;
+
   try {
-    const courses = await Review.findAll({
+    const { rows: courses, count } = await Review.findAndCountAll({
+      limit,
+      offset: skip,
       where: { lecturerId: req.params.id },
       include: [
         {
@@ -95,7 +105,9 @@ async function courses(req, res) {
       attributes: [],
     });
 
-    return res.send(reduceCourses(courses));
+    const rows = reduceCourses(courses);
+
+    return res.send(paginateResults({ count, limit, skip, rows }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
