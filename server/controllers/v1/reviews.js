@@ -1,12 +1,23 @@
 const { Course, Lecturer, Review, User } = require('../../models');
+const { validateParams, paginateResults } = require('../../util');
 const { Op } = require('sequelize');
 
 async function list(req, res) {
   const lecturerId = req.query.lecturerId || '';
   const courseId = req.query.courseId || '';
 
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { limit, skip } = valid;
+
   try {
-    const reviews = await Review.findAll({
+    const { count, rows } = await Review.findAndCountAll({
+      limit,
+      offset: skip,
       where: {
         [Op.or]: [
           {
@@ -36,7 +47,7 @@ async function list(req, res) {
       attributes: ['id', 'semester', 'year', 'comment', 'rating'],
     });
 
-    return res.send(reviews);
+    return res.send(paginateResults({ count, rows, limit, skip }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
