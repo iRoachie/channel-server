@@ -1,11 +1,21 @@
 const { Course, Review, sequelize } = require('../../models');
 const { Op, fn, col } = require('sequelize');
+const { paginateResults, validateParams } = require('../../util');
 
 async function list(req, res) {
-  const search = req.query.search ? req.query.search.toLowerCase() : '';
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { search, limit, skip } = valid;
 
   try {
-    const courses = await Course.findAll({
+    const { rows, count } = await Course.findAndCountAll({
+      limit,
+      offset: skip,
+      subQuery: false,
       where: {
         [Op.or]: [
           {
@@ -35,7 +45,7 @@ async function list(req, res) {
       group: ['Course.id'],
     });
 
-    res.send(courses);
+    res.send(paginateResults({ count, limit, skip, rows }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
