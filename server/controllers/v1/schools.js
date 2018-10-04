@@ -1,12 +1,23 @@
 const { School } = require('../../models');
+const { validateParams, paginateResults } = require('../../util');
 
-async function list(_, res) {
+async function list(req, res) {
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { skip, limit } = valid;
+
   try {
-    const schools = await School.findAll({
+    const { rows, count } = await School.findAndCountAll({
+      offset: skip,
+      limit,
       attributes: ['id', 'name'],
     });
 
-    res.send(schools);
+    res.send(paginateResults({ rows, count, skip, limit }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
