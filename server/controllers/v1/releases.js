@@ -1,9 +1,21 @@
 const { Release } = require('../../models');
+const { paginateResults, validateParams } = require('../../util');
 
-async function list(_, res) {
+async function list(req, res) {
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { limit, skip } = valid;
+
   try {
-    const releases = await Release.all();
-    return res.send(releases);
+    const { count, rows } = await Release.findAndCountAll({
+      limit,
+      offset: skip,
+    });
+    return res.send(paginateResults({ count, rows, skip, limit }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }

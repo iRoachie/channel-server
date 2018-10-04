@@ -20,7 +20,7 @@ const paginateResults = ({ count, limit, skip, rows }) => {
   /**
    * Necessary because of https://github.com/sequelize/sequelize/issues/6148
    */
-  const realCount = count.length;
+  const realCount = Array.isArray(count) ? count.length : count;
 
   const response = {
     pageInfo: {
