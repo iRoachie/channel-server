@@ -1,5 +1,6 @@
 const admin = require(`firebase-admin`);
 const { User } = require(`../../models`);
+const { validateParams, paginateResults } = require(`../../util`);
 
 async function create(req, res) {
   let { id, name, avatar } = req.body;
@@ -75,10 +76,21 @@ async function update(req, res) {
   }
 }
 
-async function list(_, res) {
+async function list(req, res) {
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { limit, skip } = valid;
   try {
-    const users = await User.all();
-    return res.send(users);
+    const { rows, count } = await User.findAndCountAll({
+      limit,
+      offset: skip,
+    });
+
+    return res.send(paginateResults({ count, limit, skip, rows }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
