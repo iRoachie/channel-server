@@ -1,5 +1,5 @@
-const { Course, Review, sequelize } = require(`../../models`);
-const { Op, fn, col } = require(`sequelize`);
+const { Course, Review, Lecturer, School } = require(`../../models`);
+const { Op, fn, col, literal } = require(`sequelize`);
 const { paginateResults, validateParams } = require(`../../util`);
 
 async function list(req, res) {
@@ -90,31 +90,54 @@ async function create(req, res) {
 
 async function listReviewedLecturers(req, res) {
   const courseId = req.params.courseId;
+  const valid = validateParams(req, res);
+
+  if (!valid) {
+    return;
+  }
+
+  const { limit, skip } = valid;
 
   try {
-    const results = await sequelize.query(
-      `SELECT l.id, l.name, l.schoolId, s.name as schoolName, COUNT(r.id) as totalReviews, AVG(r.rating) as averageRating FROM Lecturers l
-      INNER JOIN Reviews r
-      on r.lecturerId = l.id
-      INNER JOIN Schools s
-      on l.schoolId = s.id
-      where r.courseId = ?
-      GROUP BY r.courseId, r.lecturerId
-      ORDER BY averageRating DESC, totalReviews DESC;`,
-      { replacements: [courseId], type: sequelize.QueryTypes.SELECT }
-    );
-
-    return res.send(
-      results.map(({ id, name, totalReviews, schoolName, averageRating }) => ({
-        id,
-        name,
-        totalReviews,
-        averageRating,
-        School: {
-          name: schoolName,
+    const { count, rows } = await Lecturer.findAndCountAll({
+      limit,
+      offset: skip,
+      subQuery: false,
+      include: [
+        {
+          model: Review,
+          as: `reviews`,
+          attributes: [],
+          required: true,
+          include: [
+            {
+              model: Course,
+              where: {
+                id: courseId,
+              },
+              attributes: [],
+            },
+          ],
         },
-      }))
-    );
+        {
+          model: School,
+          attributes: [`name`],
+        },
+      ],
+      attributes: [
+        `id`,
+        `name`,
+        [fn(`COUNT`, col(`reviews.id`)), `totalReviews`],
+        [fn(`AVG`, col(`reviews.rating`)), `averageRating`],
+      ],
+      group: [`reviews.courseId`, `reviews.lecturerId`],
+      order: [
+        [literal(`averageRating`), `DESC`],
+        [literal(`totalReviews`), `DESC`],
+      ],
+    });
+
+    res.send(paginateResults({ count, limit, skip, rows }));
   } catch (error) {
     return res.boom.serverUnavailable();
   }
