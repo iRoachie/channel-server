@@ -6,6 +6,13 @@ module.exports = {
       `Releases`,
       [
         {
+          title: `September/October 2018`,
+          cover: `https://f001.backblazeb2.com/file/uscchannel/releases/september-october-2018/cover.jpg`,
+          magazine: `https://f001.backblazeb2.com/file/uscchannel/releases/september-october-2018/magazine.pdf`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
           title: `October/November 2017`,
           cover: `https://f001.backblazeb2.com/file/uscchannel/releases/october-november-2017/cover.jpg`,
           magazine: `https://f001.backblazeb2.com/file/uscchannel/releases/october-november-2017/magazine.pdf`,
