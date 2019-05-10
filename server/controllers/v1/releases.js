@@ -14,6 +14,7 @@ async function list(req, res) {
     const { count, rows } = await Release.findAndCountAll({
       limit,
       offset: skip,
+      order: [[`id`, `DESC`]],
     });
     return res.send(paginateResults({ count, rows, skip, limit }));
   } catch (error) {
